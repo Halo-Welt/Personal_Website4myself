@@ -50,7 +50,7 @@ function init() {
     // 加载模型
     const loader = new GLTFLoader();
     loader.load(
-        'models/eva01.glb', // 注意路径，移除开头的斜杠
+        '/Personal_Website4myself/models/eva01.glb', // 添加仓库名称到路径中
         function (gltf) {
             model = gltf.scene;
             
