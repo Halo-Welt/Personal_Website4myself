@@ -115,6 +115,9 @@ body {
 .hero h1 {
     font-size: 3.5rem;
     margin-bottom: 1rem;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
 }
 
 .hero h2 {
@@ -267,6 +270,9 @@ footer {
 
     .hero h1 {
         font-size: 2.5rem;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     .hero h2 {
@@ -299,12 +305,24 @@ footer {
         justify-content: center;
         flex-direction: column;
     }
+
+    #typing-text {
+        display: block;
+        width: fit-content;
+        margin: 0 auto;
+        text-align: left;
+        min-height: 1.2em;
+        line-height: 1.2;
+        margin-top: 0.5rem;
+    }
 }
 
 #typing-text {
     border-right: 2px solid var(--primary-color);
     padding-right: 5px;
     animation: blink 0.75s step-end infinite;
+    min-height: 1.2em;
+    display: inline-block;
 }
 
 @keyframes blink {

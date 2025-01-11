@@ -47,17 +47,26 @@ function init() {
     directionalLight.position.set(5, 5, 5);
     scene.add(directionalLight);
 
+    // 添加一个函数来判断当前环境
+    function getModelPath() {
+        // 检查是否在 GitHub Pages 环境
+        if (window.location.hostname.includes('github.io')) {
+            return '/Personal_Website4myself/models/eva01.glb';
+        } else {
+            // 本地环境
+            return '/models/eva01.glb';
+        }
+    }
+
     // 加载模型
     const loader = new GLTFLoader();
     loader.load(
-        '/Personal_Website4myself/models/eva01.glb', // 添加仓库名称到路径中
+        getModelPath(), // 使用动态路径
         function (gltf) {
             model = gltf.scene;
             
-            // 将缩放从 1.5 改为 3.0（两倍大小）
+            // 调整模型位置和大小
             model.scale.set(3.0, 3.0, 3.0);
-            
-            // 将 y 轴位置从 -1 改为 0（向上移动）
             model.position.set(0, 0, 0);
             
             // 确保模型材质正确显示
