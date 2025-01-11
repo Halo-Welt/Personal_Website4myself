@@ -1,0 +1,56 @@
+.audio-visualizer {
+    width: 600px;
+    height: 120px;
+    display: flex;
+    align-items: flex-end;
+    gap: 1px;
+    padding: 20px 0;
+    margin-top: 2rem;
+    background-color: transparent;
+    overflow: hidden;
+    border: none;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .audio-visualizer {
+        width: 100%;
+        max-width: 600px;
+    }
+}
+
+.bar {
+    flex: 1;
+    height: 100%;
+    min-width: 1px;
+    transform-origin: bottom;
+    animation: bounce 2s ease infinite;
+    opacity: 0.8;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: scaleY(0.1);
+    }
+    50% {
+        transform: scaleY(1);
+    }
+}
+
+/* 交替的白色和荧光绿色音符 */
+.bar:nth-child(odd) {
+    background: var(--text-color);
+}
+
+.bar:nth-child(even) {
+    background: var(--primary-color);
+}
+
+/* 为每个bar设置不同的动画延迟 */
+.bar:nth-child(1) { animation-delay: 0.1s; }
+.bar:nth-child(2) { animation-delay: 0.2s; }
+.bar:nth-child(3) { animation-delay: 0.3s; }
+/* ... 继续设置延迟 ... */
+.bar:nth-child(80) { animation-delay: 8s; } 

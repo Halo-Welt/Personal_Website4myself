@@ -192,4 +192,14 @@
     .profile-stats {
         align-items: center;
     }
+}
+
+.github-username {
+    color: var(--text-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.github-username:hover {
+    color: var(--primary-color);
 } 
