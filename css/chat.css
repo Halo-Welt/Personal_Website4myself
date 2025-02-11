@@ -52,6 +52,10 @@
     padding: 1rem;
     border-radius: 12px;
     animation: messageAppear 0.3s ease;
+    font-size: 16px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .message.user {
@@ -71,7 +75,7 @@
     border-top: 1px solid rgba(57, 255, 20, 0.1);
     display: flex;
     gap: 1rem;
-    align-items: flex-end;
+    align-items: center;
 }
 
 #chat-input {
@@ -84,6 +88,9 @@
     resize: none;
     max-height: 150px;
     font-family: inherit;
+    font-size: 16px;
+    line-height: 1.5;
+    min-height: 50px;
 }
 
 #chat-input:focus {
@@ -96,21 +103,48 @@
     border-radius: 8px;
     width: 50px;
     height: 50px;
+    min-height: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.1s ease;
+    flex-shrink: 0;
+    position: relative;
 }
 
 #send-button:hover {
     transform: scale(1.05);
-    background: #4fff2a;
+    filter: brightness(1.1);
+}
+
+#send-button.stop {
+    background: var(--primary-color);
+}
+
+#send-button.stop::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: var(--background-color);
+    border-radius: 3px;
+    transition: all 0.1s ease;
+}
+
+#send-button.stop:hover::before {
+    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.9);
 }
 
 #send-button i {
     color: var(--background-color);
     font-size: 1.2rem;
+    transition: all 0.1s ease;
+}
+
+#send-button.stop i {
+    display: none;
 }
 
 @keyframes messageAppear {
@@ -183,7 +217,5 @@
 
 /* Disabled button state */
 #send-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
+    display: none;
 } 

@@ -60,36 +60,42 @@ app.post('/api/chat', async (req, res) => {
             throw new Error('DeepSeek API key is not configured');
         }
 
-        const apiUrl = 'https://api.deepseek.com/v1/chat/completions';
+        const apiUrl = 'https://api.deepseek.com/chat/completions';
         console.log('Making request to DeepSeek API...');
         
+        const requestBody = {
+            model: 'deepseek-chat',
+            messages: req.body.messages,
+            temperature: 0.7,
+            max_tokens: 2000,
+            stream: false
+        };
+
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
             },
-            body: JSON.stringify({
-                model: 'deepseek-chat',
-                messages: req.body.messages,
-                stream: false
-            })
+            body: JSON.stringify(requestBody)
         });
 
-        const data = await response.json();
-
         if (!response.ok) {
-            console.error('DeepSeek API Error:', {
-                status: response.status,
-                statusText: response.statusText,
-                error: data
-            });
+            const errorText = await response.text();
+            console.error('DeepSeek API Error Response:', errorText);
             throw new Error(`DeepSeek API error: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        
+        if (!data.choices?.[0]?.message?.content) {
+            console.error('Unexpected API response format:', data);
+            throw new Error('Unexpected response format from DeepSeek API');
         }
 
         console.log('Received response from DeepSeek API:', {
             status: response.status,
-            messageContent: data.choices?.[0]?.message?.content?.substring(0, 50) + '...'
+            messageContent: data.choices[0].message.content.substring(0, 50) + '...'
         });
 
         // Send the response back to the client

@@ -2,92 +2,165 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatMessages = document.getElementById('chat-messages');
     const chatInput = document.getElementById('chat-input');
     const sendButton = document.getElementById('send-button');
-    const API_URL = 'http://localhost:3000/api/chat';
+    const API_URL = 'http://localhost:3000/api/chat';  // 保持使用本地服务器作为代理
     
     let conversationHistory = [];
     let isServerConnected = false;
     let retryCount = 0;
-    const maxRetries = 5;
+    let currentController = null; // 用于中止请求的 AbortController
+    const maxRetries = 3;  // 减少重试次数，避免过多等待
 
-    // Auto-resize textarea
+    // 自动调整文本框高度
     chatInput.addEventListener('input', function() {
         this.style.height = 'auto';
         this.style.height = (this.scrollHeight) + 'px';
     });
 
-    // Send message on Enter (but allow Shift+Enter for new line)
+    // 回车发送消息（Shift+Enter换行）
     chatInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
+            // 检查是否正在使用输入法
+            if (e.isComposing || e.keyCode === 229) {
+                return; // 如果是输入法正在输入，不处理回车键
+            }
             e.preventDefault();
             sendMessage();
         }
     });
 
-    // Send message on button click
-    sendButton.addEventListener('click', sendMessage);
+    // 添加 compositionend 事件监听器
+    chatInput.addEventListener('compositionend', (e) => {
+        // 输入法输入完成后，如果按下了回车键，则发送消息
+        if (e.data && chatInput.value.trim() !== '') {
+            const lastChar = e.data[e.data.length - 1];
+            if (lastChar === '\n') {
+                sendMessage();
+            }
+        }
+    });
 
+    // 点击发送/停止按钮
+    sendButton.addEventListener('click', () => {
+        if (currentController) {
+            // 如果正在进行对话，则中止
+            abortCurrentConversation();
+        } else {
+            // 否则发送新消息
+            sendMessage();
+        }
+    });
+
+    // 尝试启动服务器
     async function startServer() {
         try {
-            // 尝试启动服务器
             const response = await fetch('http://localhost:3000/start-server', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-
+            
             if (response.ok) {
-                console.log('Server started successfully');
+                console.log('服务器启动成功');
                 return true;
             }
+            return false;
         } catch (error) {
-            console.log('Server not running, attempting to start...');
-        }
-
-        try {
-            // 如果服务器没有响应，尝试通过 pm2 启动
-            const startResponse = await fetch('http://localhost:3000/');
-            if (startResponse.ok) {
-                console.log('Server is now running');
-                return true;
-            }
-        } catch (error) {
-            console.error('Failed to start server:', error);
+            console.error('启动服务器失败:', error);
             return false;
         }
     }
 
+    // 检查服务器连接状态
     async function checkServerConnection() {
         try {
             const response = await fetch('http://localhost:3000/');
             isServerConnected = response.ok;
+            
             if (!isServerConnected && retryCount < maxRetries) {
                 retryCount++;
-                console.log(`Attempting to start server (attempt ${retryCount}/${maxRetries})...`);
-                await startServer();
-                // 等待服务器启动
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                console.log(`正在尝试启动服务器 (第 ${retryCount}/${maxRetries} 次)...`);
+                
+                // 尝试启动服务器
+                const serverStarted = await startServer();
+                if (serverStarted) {
+                    // 等待服务器完全启动
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    return checkServerConnection();
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 return checkServerConnection();
             }
             
             if (!isServerConnected) {
-                addMessage("Error: Cannot connect to chat server. Please refresh the page or contact support.", 'ai');
+                addMessage("提示：正在尝试启动聊天服务器，请稍候...", 'ai');
                 sendButton.disabled = true;
             } else {
                 sendButton.disabled = false;
-                retryCount = 0; // 重置重试计数
+                retryCount = 0;
             }
         } catch (error) {
-            console.error('Server connection error:', error);
-            if (retryCount < maxRetries) {
-                retryCount++;
-                console.log(`Retrying connection (attempt ${retryCount}/${maxRetries})...`);
+            console.error('服务器连接错误:', error);
+            isServerConnected = false;
+            addMessage("提示：正在尝试启动聊天服务器，请稍候...", 'ai');
+            
+            // 尝试启动服务器
+            const serverStarted = await startServer();
+            if (serverStarted) {
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 return checkServerConnection();
             }
-            isServerConnected = false;
-            addMessage("Error: Cannot connect to chat server. Please refresh the page or contact support.", 'ai');
+            
             sendButton.disabled = true;
+        }
+    }
+
+    // 更新发送按钮状态
+    function updateSendButton(isThinking) {
+        if (isThinking) {
+            sendButton.classList.add('stop');
+            sendButton.title = '点击停止对话';
+        } else {
+            sendButton.classList.remove('stop');
+            sendButton.title = '发送消息';
+        }
+    }
+
+    // 中止当前对话
+    function abortCurrentConversation() {
+        if (currentController) {
+            updateSendButton(false);  // 立即更新按钮状态
+            currentController.abort();
+            currentController = null;
+            return true;
+        }
+        return false;
+    }
+
+    // 模拟打字机效果的函数
+    async function typewriterEffect(messageDiv, text, delay = 30) {
+        let currentText = '';
+        const chars = text.split('');
+        
+        for (const char of chars) {
+            if (currentController === null) {
+                // 如果对话被中止，停止打字效果
+                return;
+            }
+            
+            currentText += char;
+            
+            // 支持markdown代码块
+            if (currentText.includes('```')) {
+                const formattedText = currentText.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+                messageDiv.innerHTML = formattedText;
+            } else {
+                messageDiv.textContent = currentText;
+            }
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            await new Promise(resolve => setTimeout(resolve, delay));
         }
     }
 
@@ -95,92 +168,134 @@ document.addEventListener('DOMContentLoaded', () => {
         const message = chatInput.value.trim();
         if (!message) return;
 
-        // Add user message
+        // 添加用户消息
         addMessage(message, 'user');
         chatInput.value = '';
         chatInput.style.height = 'auto';
 
-        // Update conversation history
+        // 更新对话历史
         conversationHistory.push({
             role: 'user',
             content: message
         });
 
-        // Show loading state
-        sendButton.disabled = true;
-        const loadingDots = document.createElement('div');
-        loadingDots.classList.add('message', 'ai', 'loading');
-        loadingDots.textContent = 'Thinking...';
-        chatMessages.appendChild(loadingDots);
+        // 创建思考中的消息
+        const loadingDiv = document.createElement('div');
+        loadingDiv.classList.add('message', 'ai', 'loading');
+        loadingDiv.textContent = '思考中...';
+        chatMessages.appendChild(loadingDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
         try {
-            // 如果服务器未连接，尝试重新连接
+            // 检查服务器连接
             if (!isServerConnected) {
                 await checkServerConnection();
                 if (!isServerConnected) {
-                    throw new Error('Server is not available');
+                    throw new Error('本地服务器未启动，请先运行 npm start');
                 }
             }
 
-            console.log('Sending request to server with messages:', conversationHistory);
-            
+            // 创建新的 AbortController 并立即更新按钮状态
+            currentController = new AbortController();
+            updateSendButton(true);
+
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     messages: [
                         {
                             role: 'system',
-                            content: 'You are a helpful AI assistant with expertise in design and engineering. You should provide concise, accurate, and helpful responses.'
+                            content: `你是一位在设计学和工程学领域有着深厚造诣的专家。你具备以下特点：
+
+1. 设计专长：
+- 精通用户体验（UX）和用户界面（UI）设计
+- 熟悉现代设计趋势和最佳实践
+- 擅长从美学和功能性的角度进行设计评估
+- 了解各类设计工具和设计系统
+
+2. 工程专长：
+- 深入理解软件工程原理和架构设计
+- 熟悉各种编程语言和技术栈
+- 擅长解决复杂的工程问题
+- 注重代码质量和系统性能
+
+3. 沟通风格：
+- 使用专业但易懂的语言
+- 给出具体和可操作的建议
+- 结合理论和实践经验
+- 提供全面的分析和多角度的思考
+- 能够使用表格、SVG等多种形式进行输出
+
+请以专业、友好的方式回答问题，并在适当时结合实例说明。`
                         },
                         ...conversationHistory
                     ]
-                })
+                }),
+                signal: currentController.signal
             });
 
+            // 如果对话已被中止，直接返回
+            if (currentController === null) {
+                loadingDiv.remove();
+                return;
+            }
+
             if (!response.ok) {
-                throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                throw new Error('API请求失败，请检查服务器状态');
             }
 
             const data = await response.json();
-            console.log('Server response:', data);
-
-            loadingDots.remove();
+            
+            // 如果对话已被中止，不显示响应
+            if (currentController === null) {
+                loadingDiv.remove();
+                return;
+            }
             
             if (!data.choices?.[0]?.message?.content) {
-                throw new Error('Invalid response format from API');
+                throw new Error('API响应格式无效');
             }
 
-            // Add AI response
-            const aiResponse = data.choices[0].message.content;
-            addMessage(aiResponse, 'ai');
+            // 创建AI消息容器
+            const aiMessageDiv = document.createElement('div');
+            aiMessageDiv.classList.add('message', 'ai', 'typing');
+            chatMessages.appendChild(aiMessageDiv);
+            
+            // 移除加载消息
+            loadingDiv.remove();
 
-            // Update conversation history
+            // 使用打字机效果显示消息
+            const aiResponse = data.choices[0].message.content;
+            await typewriterEffect(aiMessageDiv, aiResponse);
+            
+            // 完成输出后移除打字效果
+            aiMessageDiv.classList.remove('typing');
+
+            // 更新对话历史
             conversationHistory.push({
                 role: 'assistant',
                 content: aiResponse
             });
 
-            // Keep conversation history at a reasonable length
+            // 保持对话历史在合理长度
             if (conversationHistory.length > 10) {
                 conversationHistory = conversationHistory.slice(-10);
             }
 
         } catch (error) {
-            console.error('Error in sendMessage:', error);
-            loadingDots.remove();
-            addMessage(`Error: ${error.message}. Please try again.`, 'ai');
-            // 如果是服务器错误，尝试重新连接
-            if (error.message.includes('Server error') || error.message.includes('Failed to fetch')) {
-                isServerConnected = false;
-                await checkServerConnection();
+            console.error('发送消息时出错:', error);
+            loadingDiv.remove();
+            if (error.name === 'AbortError') {
+                addMessage('对话已中止', 'ai');
+            } else {
+                addMessage(`错误: ${error.message}`, 'ai');
             }
         } finally {
-            sendButton.disabled = false;
+            currentController = null;
+            updateSendButton(false);
         }
     }
 
@@ -188,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('message', sender);
         
-        // Support for markdown-style code blocks
+        // 支持markdown代码块
         if (text.includes('```')) {
             const formattedText = text.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
             messageDiv.innerHTML = formattedText;
@@ -197,22 +312,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         chatMessages.appendChild(messageDiv);
-        
-        // Scroll to bottom
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    // Initial server check and startup
+    // 初始检查服务器状态
     checkServerConnection().then(() => {
         if (isServerConnected) {
-            addMessage("Hello! I'm your AI assistant powered by DeepSeek. I specialize in design and engineering. How can I help you today?", 'ai');
+            addMessage("你好！我是一位专注于设计学和工程学的AI专家。我可以：\n\n" + 
+                      "🎨 帮你解决设计相关问题（UI/UX、视觉设计、设计系统等）\n" +
+                      "🔧 协助处理工程技术难题（架构设计、代码优化、性能提升等）\n" +
+                      "💡 提供专业的建议和创新思路\n\n" +
+                      "请告诉我你遇到了什么问题，我很乐意帮助你！", 'ai');
         }
     });
 
-    // 定期检查服务器连接状态
+    // 定期检查服务器连接状态（每60秒）
     setInterval(async () => {
         if (!isServerConnected) {
             await checkServerConnection();
         }
-    }, 30000); // 每30秒检查一次
+    }, 60000);
 }); 

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cool | Desigineer</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/cool.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">DESIGINEER</div>
+        <div class="nav-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="Kabbalah.html">Kabbalah</a></li>
+            <li><a href="github.html">GitHub</a></li>
+            <li><a href="chat.html">Chat</a></li>
+            <li><a href="cool.html" class="active">Cool</a></li>
+        </ul>
+    </nav>
+
+    <main class="cool-content">
+        <div class="cool-container">
+            <div class="cool-header">
+                <h1>Cool Experiments</h1>
+                <p>A collection of interesting interactive experiments</p>
+            </div>
+            
+            <div class="experiments-grid">
+                <div class="experiment-card">
+                    <div class="experiment-preview">
+                        <svg viewBox="0 0 200 200" class="plasma-effect">
+                            <defs>
+                                <radialGradient id="plasma1" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                                    <stop offset="0%" style="stop-color:rgb(57, 255, 20);stop-opacity:0.8"/>
+                                    <stop offset="100%" style="stop-color:rgb(57, 255, 20);stop-opacity:0"/>
+                                </radialGradient>
+                            </defs>
+                            <circle cx="100" cy="100" r="80" fill="url(#plasma1)">
+                                <animate attributeName="r" values="70;90;70" dur="2s" repeatCount="indefinite"/>
+                            </circle>
+                        </svg>
+                    </div>
+                    <h3>Plasma Effect</h3>
+                    <p>Interactive plasma animation with mouse tracking</p>
+                </div>
+
+                <div class="experiment-card">
+                    <div class="experiment-preview particle-system">
+                        <div class="particles"></div>
+                    </div>
+                    <h3>Particle System</h3>
+                    <p>Dynamic particle system with physics simulation</p>
+                </div>
+
+                <div class="experiment-card">
+                    <div class="experiment-preview sound-wave">
+                        <div class="wave"></div>
+                    </div>
+                    <h3>Sound Visualizer</h3>
+                    <p>Real-time audio visualization effects</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="social-links">
+            <a href="#">
+                <i class="fab fa-weixin"></i>
+                <div class="wechat-qr">
+                    <img src="images/Wechat.jpg" alt="WeChat QR Code">
+                </div>
+            </a>
+            <a href="https://www.xiaohongshu.com/user/profile/5e4ae8280000000001007545" target="_blank">
+                <i class="fas fa-book"></i>
+            </a>
+            <a href="https://github.com/Halo-Welt" target="_blank">
+                <i class="fab fa-github"></i>
+            </a>
+        </div>
+        <p>&copy; 2025 LIU Xinyu. All rights reserved.</p>
+    </footer>
+
+    <div id="splash-cursor-root"></div>
+
+    <script src="js/main.js"></script>
+    <script src="js/cool.js"></script>
+    <script type="module">
+        import { SplashCursor } from './src/Animations/SplashCursor.js';
+        
+        // 初始化鼠标特效
+        new SplashCursor({
+            size: 8,
+            color: '#39ff14',
+            splashSize: 50,
+            duration: 600,
+            interval: 50
+        });
+    </script>
+</body>
+</html> 
