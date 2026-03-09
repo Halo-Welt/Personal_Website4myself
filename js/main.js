@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const typingText = document.getElementById('typing-text');
         if (!typingText) return; // 如果元素不存在，直接返回
 
-        const words = ['LIU Xinyu.', 'A Designer.', 'A Student.'];
+        const words = ['LIU Xinyu.', 'Designer.', 'Engineer.', 'A Student.'];
         let wordIndex = 0;
         let charIndex = 0;
         let isDeleting = false;

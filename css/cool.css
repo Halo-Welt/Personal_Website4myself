@@ -10,13 +10,9 @@
 
 .cool-container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 2rem;
     padding: 2rem;
-    background: rgba(42, 42, 42, 0.3);
-    border-radius: 16px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(57, 255, 20, 0.1);
 }
 
 .cool-header {
@@ -26,10 +22,21 @@
 
 .cool-header h1 {
     color: var(--primary-color);
-    font-size: 2.5rem;
+    font-size: 3rem;
     margin-bottom: 1rem;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 4px;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+    }
+    to {
+        text-shadow: 0 0 20px rgba(57, 255, 20, 0.8),
+                     0 0 30px rgba(57, 255, 20, 0.5);
+    }
 }
 
 .cool-header p {
@@ -38,91 +45,140 @@
     font-size: 1.2rem;
 }
 
+/* Experiments Grid */
 .experiments-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 2rem;
     padding: 1rem;
 }
 
+/* Experiment Card */
 .experiment-card {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    padding: 1.5rem;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer;
 }
 
 .experiment-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(57, 255, 20, 0.1);
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(57, 255, 20, 0.15);
+    border-color: rgba(57, 255, 20, 0.4);
 }
 
+.experiment-card.active {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 30px rgba(57, 255, 20, 0.2);
+}
+
+/* Experiment Preview */
 .experiment-preview {
-    height: 200px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    overflow: hidden;
+    width: 100%;
+    height: 220px;
+    background: #000;
     position: relative;
+    overflow: hidden;
 }
 
-.experiment-card h3 {
-    color: var(--primary-color);
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.experiment-card p {
-    color: var(--text-color);
-    opacity: 0.8;
-    font-size: 1rem;
-    line-height: 1.5;
-}
-
-/* Plasma Effect */
-.plasma-effect {
+.experiment-preview canvas {
     width: 100%;
     height: 100%;
+    display: block;
 }
 
-/* Particle System */
-.particle-system {
-    background: #000;
+/* Experiment Info */
+.experiment-info {
+    padding: 1.5rem;
 }
 
-.particles {
-    position: absolute;
+.experiment-info h3 {
+    color: var(--primary-color);
+    font-size: 1.4rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.experiment-info h3 i {
+    font-size: 1.2rem;
+}
+
+.experiment-info p {
+    color: var(--text-color);
+    opacity: 0.85;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.experiment-tag {
+    display: inline-block;
+    padding: 0.35rem 0.85rem;
+    background: rgba(57, 255, 20, 0.1);
+    border: 1px solid rgba(57, 255, 20, 0.3);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Fullscreen Canvas */
+.fullscreen-canvas {
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    background: #000;
+    z-index: 3000;
+    display: none;
 }
 
-/* Sound Wave */
-.sound-wave {
+.fullscreen-canvas.active {
+    display: block;
+}
+
+.fullscreen-canvas canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.close-fullscreen {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 3001;
+    background: rgba(57, 255, 20, 0.2);
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(45deg, #000, #111);
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
 }
 
-.wave {
-    width: 80%;
-    height: 60px;
-    background: linear-gradient(90deg, var(--primary-color), #fff);
-    mask: repeating-linear-gradient(90deg, #000 0px, #000 2px, transparent 2px, transparent 4px);
-    -webkit-mask: repeating-linear-gradient(90deg, #000 0px, #000 2px, transparent 2px, transparent 4px);
-    animation: waveAnimation 2s ease-in-out infinite;
+.close-fullscreen:hover {
+    background: var(--primary-color);
+    color: var(--background-color);
 }
 
-@keyframes waveAnimation {
-    0%, 100% { transform: scaleY(0.5); }
-    50% { transform: scaleY(1.5); }
-}
-
-/* Mobile responsive styles */
+/* Mobile responsive */
 @media (max-width: 768px) {
+    .cool-content {
+        padding-top: 70px;
+    }
+
     .cool-container {
         margin: 1rem;
         padding: 1rem;
@@ -130,9 +186,40 @@
 
     .cool-header h1 {
         font-size: 2rem;
+        letter-spacing: 2px;
     }
 
     .experiments-grid {
         grid-template-columns: 1fr;
     }
-} 
+
+    .experiment-preview {
+        height: 180px;
+    }
+}
+
+/* Pulse animation for interactive hint */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+.experiment-card[data-experiment="particleField"] .experiment-preview::after,
+.experiment-card[data-experiment="explosion"] .experiment-preview::after {
+    content: 'Click to interact';
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.5rem 1rem;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid var(--primary-color);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: var(--primary-color);
+    animation: pulse 2s ease-in-out infinite;
+}
