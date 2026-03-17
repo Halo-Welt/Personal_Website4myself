@@ -1,5 +1,5 @@
-// Vercel Edge Function for AI Chat
-// Deploy this to Vercel with your OFOX_API_KEY environment variable
+// Vercel Edge Function for AI Chat using
+// 部署到Vercel时会自动使用环境变量中的
 
 export const config = {
   runtime: 'edge',
@@ -36,7 +36,8 @@ export default async function handler(request) {
       });
     }
 
-    const apiKey = process.env.OFOX_API_KEY;
+    // 使用
+    const apiKey = process.env.? 'sk-8465def446a94835a95996382d3996f9';
 
     if (!apiKey) {
       return new Response(JSON.stringify({ error: 'API key not configured' }), {
@@ -45,15 +46,17 @@ export default async function handler(request) {
       });
     }
 
-    // Call Ofox.ai API
-    const response = await fetch('https://api.ofox.ai/v1/chat/completions', {
+    console.log('Calling  API...');
+
+    // Call  API
+    const response = await fetch('https://api./chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'z-ai//',
+        model: '',
         messages: messages,
         temperature: 0.7,
         max_tokens: 2000,
@@ -63,6 +66,7 @@ export default async function handler(request) {
 
     if (!response.ok) {
       const error = await response.text();
+      console.error(' API error:', error);
       return new Response(JSON.stringify({ error: `API error: ${error}` }), {
         status: response.status,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -71,11 +75,14 @@ export default async function handler(request) {
 
     const data = await response.json();
 
+    console.log(' API response received');
+
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
+    console.error('Chat function error:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

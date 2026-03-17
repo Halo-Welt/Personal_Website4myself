@@ -9,8 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initFloatingBubbles();
     initScrollAnimations();
     initStatCounters();
-    initVisitorCounter();
-    initDanmuSystem();
 });
 
 // ============================================
@@ -185,43 +183,44 @@ function initParticleNetwork() {
 }
 
 // ============================================
-// Glitch Typing Effect
+// Interactive Glitch Text Effect
 // ============================================
 function initTypingEffect() {
-    const element = document.getElementById('typing-text');
-    if (!element) return;
+    // Setup glitch word cycling (extraordinary)
+    const glitchWord = document.getElementById('glitch-word');
+    if (glitchWord) {
+        const words = [
+            'extraordinary',
+            'amazing',
+            'innovative',
+            'remarkable',
+            'incredible',
+            'fantastic',
+            'awesome'
+        ];
 
-    const text = element.dataset.text || 'LIU Xinyu';
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-    let iteration = 0;
-    let isTyping = true;
+        let currentWordIndex = 0;
+        let isHovering = false;
 
-    element.classList.add('typing');
-
-    const interval = setInterval(() => {
-        if (isTyping) {
-            // Building up
-            element.textContent = text
-                .split('')
-                .map((char, index) => {
-                    if (index < iteration) {
-                        return text[index];
-                    }
-                    return chars[Math.floor(Math.random() * chars.length)];
-                })
-                .join('');
-
-            if (iteration >= text.length) {
-                isTyping = false;
-                setTimeout(() => {
-                    element.classList.remove('typing');
-                }, 500);
-                clearInterval(interval);
+        glitchWord.addEventListener('mouseenter', () => {
+            if (!isHovering) {
+                isHovering = true;
             }
-        }
+        });
 
-        iteration += 1 / 2;
-    }, 50);
+        glitchWord.addEventListener('mouseleave', () => {
+            if (isHovering) {
+                isHovering = false;
+
+                // Change to next word
+                setTimeout(() => {
+                    currentWordIndex = (currentWordIndex + 1) % words.length;
+                    glitchWord.textContent = words[currentWordIndex];
+                    glitchWord.dataset.word = words[currentWordIndex];
+                }, 300);
+            }
+        });
+    }
 }
 
 // ============================================
@@ -342,136 +341,4 @@ function animateCounter(element, target) {
     }
 
     requestAnimationFrame(update);
-}
-
-// ============================================
-// Visitor Counter
-// ============================================
-async function initVisitorCounter() {
-    const countElement = document.getElementById('visitor-count');
-    if (!countElement) return;
-
-    try {
-        // Increment visitor count
-        const response = await fetch('/api/visitor', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            animateCounter(countElement, data.count);
-        }
-    } catch (error) {
-        console.error('Failed to fetch visitor count:', error);
-        countElement.textContent = '?';
-    }
-}
-
-// ============================================
-// Danmu (Bullet Comments) System
-// ============================================
-function initDanmuSystem() {
-    const messageInput = document.getElementById('message-input');
-    const sendButton = document.getElementById('send-message');
-    const danmuContainer = document.getElementById('danmu-container');
-
-    if (!messageInput || !sendButton || !danmuContainer) return;
-
-    // Load initial messages
-    loadMessages();
-
-    // Send message on button click
-    sendButton.addEventListener('click', sendMessage);
-
-    // Send message on Enter key
-    messageInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            sendMessage();
-        }
-    });
-}
-
-async function loadMessages() {
-    try {
-        const response = await fetch('/api/message');
-        if (response.ok) {
-            const data = await response.json();
-            const messages = data.messages || [];
-
-            // Display messages with delays
-            messages.forEach((msg, index) => {
-                setTimeout(() => {
-                    showDanmu(msg.text);
-                }, index * 2000);
-            });
-        }
-    } catch (error) {
-        console.error('Failed to load messages:', error);
-    }
-}
-
-async function sendMessage() {
-    const messageInput = document.getElementById('message-input');
-    const text = messageInput.value.trim();
-
-    if (!text) return;
-
-    try {
-        const response = await fetch('/api/message', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ text })
-        });
-
-        if (response.ok) {
-            // Show the message immediately
-            showDanmu(text, true);
-            messageInput.value = '';
-        } else {
-            const error = await response.json();
-            alert(error.error || 'Failed to send message');
-        }
-    } catch (error) {
-        console.error('Failed to send message:', error);
-        alert('Failed to send message. Please try again.');
-    }
-}
-
-function showDanmu(text, isHighlight = false) {
-    const danmuContainer = document.getElementById('danmu-container');
-    if (!danmuContainer) return;
-
-    const danmu = document.createElement('div');
-    danmu.className = 'danmu-item';
-    if (isHighlight) {
-        danmu.classList.add('highlight');
-    }
-    danmu.textContent = text;
-
-    // Random vertical position (avoiding top and bottom)
-    const top = Math.random() * 60 + 20; // 20% to 80% of container height
-    danmu.style.top = `${top}%`;
-
-    // Random animation duration (8-15 seconds)
-    const duration = Math.random() * 7 + 8;
-    danmu.style.animationDuration = `${duration}s`;
-
-    danmuContainer.appendChild(danmu);
-
-    // Remove after animation completes
-    danmu.addEventListener('animationend', () => {
-        danmu.remove();
-    });
-
-    // Also remove after max duration + buffer
-    setTimeout(() => {
-        if (danmu.parentNode) {
-            danmu.remove();
-        }
-    }, (duration + 1) * 1000);
 }

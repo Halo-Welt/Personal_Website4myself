@@ -49,23 +49,6 @@
     <canvas id="particle-canvas" class="particle-background"></canvas>
 
     <main id="main-content" class="home-content">
-        <!-- Visitor Counter -->
-        <div class="visitor-counter">
-            <i class="fas fa-eye"></i>
-            <span class="visitor-text">您是第 <span id="visitor-count" class="count-number">--</span> 位访客</span>
-        </div>
-
-        <!-- Danmu Container -->
-        <div id="danmu-container" class="danmu-container"></div>
-
-        <!-- Message Input (Fixed at bottom) -->
-        <div class="message-input-container">
-            <input type="text" id="message-input" class="message-input" placeholder="留下你的弹幕..." maxlength="100">
-            <button id="send-message" class="send-button">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </div>
-
         <!-- Hero Section -->
         <section class="hero-section">
             <div class="hero-container">
@@ -78,7 +61,10 @@
 
                     <h1 class="hero-title">
                         <span class="title-prefix">Hello, I'm</span>
-                        <span class="glitch-text" id="typing-text" data-text="LIU Xinyu">LIU Xinyu</span>
+                        <div class="name-display">
+                            <span class="name-line">LIU</span>
+                            <span class="name-line">XINYU</span>
+                        </div>
                     </h1>
 
                     <h2 class="hero-subtitle">
@@ -206,7 +192,7 @@
         <section class="contact-cta">
             <div class="section-container">
                 <div class="cta-content">
-                    <h2 class="cta-title">Let's create something <span class="glitch-word">extraordinary</span></h2>
+                    <h2 class="cta-title">Let's create something <span class="glitch-word" id="glitch-word" data-word="extraordinary">extraordinary</span></h2>
                     <p class="cta-subtitle">Open for AI Product Management opportunities</p>
                     <div class="cta-buttons">
                         <a href="chat.html" class="cta-btn primary">
@@ -221,9 +207,19 @@
                 </div>
             </div>
         </section>
+
+        <!-- Bottom Transition -->
+        <div class="bottom-transition">
+            <div class="transition-content">
+                <div class="transition-icon">
+                    <i class="fas fa-infinity"></i>
+                </div>
+                <p class="transition-text">Design • Engineering • Innovation</p>
+            </div>
+        </div>
     </main>
 
-    <footer id="footer" role="contentinfo"></footer>
+    <footer id="footer" role="contentinfo" style="display: none;"></footer>
 
     <script src="js/components/navbar.js"></script>
     <script src="js/components/footer.js"></script>
