@@ -136,6 +136,12 @@ class ParticleSystem {
     }
 
     animate(timestamp = 0) {
+        // Skip animation if page is hidden
+        if (!shouldAnimate()) {
+            requestAnimationFrame((t) => this.animate(t));
+            return;
+        }
+
         this.deltaTime = timestamp - this.lastTime;
         this.lastTime = timestamp;
 
@@ -156,7 +162,7 @@ class ParticleSystem {
 class ParticleField extends ParticleSystem {
     constructor(canvas) {
         super(canvas);
-        this.particleCount = 150;
+        this.particleCount = getOptimizedParticleCount(150);
         this.connectionDistance = 100;
         this.mouseRepelDistance = 150;
         this.mouseRepelForce = 2;
@@ -256,7 +262,7 @@ class GravitySimulation extends ParticleSystem {
     constructor(canvas) {
         super(canvas);
         this.gravity = 0.15;
-        this.particleCount = 100;
+        this.particleCount = getOptimizedParticleCount(100);
         this.attractStrength = 0.5;
     }
 
@@ -392,7 +398,7 @@ class ParticleExplosion extends ParticleSystem {
 class FlowField extends ParticleSystem {
     constructor(canvas) {
         super(canvas);
-        this.particleCount = 300;
+        this.particleCount = getOptimizedParticleCount(300);
         this.scale = 0.005;
         this.time = 0;
         this.zOff = 0;
@@ -466,7 +472,7 @@ class FlowField extends ParticleSystem {
 class ColorCyclingParticles extends ParticleSystem {
     constructor(canvas) {
         super(canvas);
-        this.particleCount = 200;
+        this.particleCount = getOptimizedParticleCount(200);
         this.hue = 0;
     }
 
@@ -540,3 +546,51 @@ window.ParticleSystemClasses = {
     FlowField,
     ColorCyclingParticles
 };
+
+// ============================================
+// Performance Optimization: Visibility Handling
+// ============================================
+
+// Track visibility state
+let isPageVisible = true;
+let animationPaused = false;
+
+// Handle visibility change - pause animations when tab is hidden
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        isPageVisible = false;
+        pauseAllAnimations();
+    } else {
+        isPageVisible = true;
+        resumeAllAnimations();
+    }
+});
+
+// Pause all particle animations
+function pauseAllAnimations() {
+    animationPaused = true;
+    // Particle animations will check this flag before updating
+}
+
+// Resume all particle animations
+function resumeAllAnimations() {
+    animationPaused = false;
+}
+
+// Check if animations should run
+function shouldAnimate() {
+    return isPageVisible && !animationPaused;
+}
+
+// Mobile detection helper
+function isMobile() {
+    return window.innerWidth < 768;
+}
+
+// Get optimized particle count based on device
+function getOptimizedParticleCount(baseCount) {
+    if (isMobile()) {
+        return Math.floor(baseCount * 0.4); // 40% on mobile
+    }
+    return baseCount;
+}

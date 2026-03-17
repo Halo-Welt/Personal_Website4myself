@@ -3,78 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIU Xinyu | Desigineer</title>
-    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Primary Meta Tags -->
+    <title>LIU Xinyu | Desigineer - Designer + Engineer</title>
+    <meta name="title" content="LIU Xinyu | Desigineer">
+    <meta name="description" content="Personal portfolio of LIU Xinyu - AI Product Manager, Designer & Engineer. Welcome to my digital playground where design meets engineering.">
+    <meta name="keywords" content="AI Product Manager, Designer, Engineer, 刘新煜, Desigineer, Portfolio, UI/UX">
+    <meta name="author" content="LIU Xinyu">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://halo-welt.github.io/Personal_Website4myself/">
+    <meta property="og:title" content="LIU Xinyu | Desigineer">
+    <meta property="og:description" content="Personal portfolio of LIU Xinyu - AI Product Manager, Designer & Engineer">
+    <meta property="og:image" content="images/og-image.svg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://halo-welt.github.io/Personal_Website4myself/">
+    <meta property="twitter:title" content="LIU Xinyu | Desigineer">
+    <meta property="twitter:description" content="Personal portfolio of LIU Xinyu - AI Product Manager, Designer & Engineer">
+    <meta property="twitter:image" content="images/og-image.svg">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://halo-welt.github.io/Personal_Website4myself/">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <link rel="apple-touch-icon" href="images/favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/audio-visualizer.css">
-    <script async src="https://unpkg.com/es-module-shims/dist/es-module-shims.js"></script>
-    <script type="importmap">
-    {
-        "imports": {
-            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-        }
-    }
-    </script>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/home-new.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">DESIGINEER</div>
-        <div class="nav-toggle">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-        <ul class="nav-links">
-            <li><a href="index.html" class="active">Home</a></li>
-            <li><a href="resume.html">Resume</a></li>
-            <li><a href="github.html">GitHub</a></li>
-            <li><a href="chat.html">Chat</a></li>
-            <li><a href="cool.html">Cool</a></li>
-        </ul>
-    </nav>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <nav id="navbar" class="navbar" role="navigation" aria-label="Main navigation"></nav>
 
-    <main class="home-content">
-        <div class="home-container">
-            <div class="hero">
-                <h1>
-                    <span>Hello, I'm</span>
-                    <span class="highlight" id="typing-text"></span>
-                </h1>
-                <h2>Designer <span>+</span> Engineer <span>=</span> Desigineer</h2>
-                <p class="hero-quote">I love you more than you'll ever know.</p>
-                <div class="cta-buttons">
-                    <a href="resume.html" class="btn primary">View on Resume</a>
-                </div>
-                <div class="audio-visualizer"></div>
-            </div>
-            <div class="hero-image">
-                <div id="model-container"></div>
-            </div>
+    <!-- Particle Network Background -->
+    <canvas id="particle-canvas" class="particle-background"></canvas>
+
+    <main id="main-content" class="home-content">
+        <!-- Visitor Counter -->
+        <div class="visitor-counter">
+            <i class="fas fa-eye"></i>
+            <span class="visitor-text">您是第 <span id="visitor-count" class="count-number">--</span> 位访客</span>
         </div>
+
+        <!-- Danmu Container -->
+        <div id="danmu-container" class="danmu-container"></div>
+
+        <!-- Message Input (Fixed at bottom) -->
+        <div class="message-input-container">
+            <input type="text" id="message-input" class="message-input" placeholder="留下你的弹幕..." maxlength="100">
+            <button id="send-message" class="send-button">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-container">
+                <div class="hero-text">
+                    <p class="hero-greeting">
+                        <span class="bracket">[</span>
+                        <span class="greeting-text">SYSTEM.ONLINE</span>
+                        <span class="bracket">]</span>
+                    </p>
+
+                    <h1 class="hero-title">
+                        <span class="title-prefix">Hello, I'm</span>
+                        <span class="glitch-text" id="typing-text" data-text="LIU Xinyu">LIU Xinyu</span>
+                    </h1>
+
+                    <h2 class="hero-subtitle">
+                        <span class="role">AI Product Manager</span>
+                        <span class="divider">//</span>
+                        <span class="role">Designer</span>
+                        <span class="divider">//</span>
+                        <span class="role">Engineer</span>
+                    </h2>
+
+                    <p class="hero-tagline">
+                        Bridging the gap between <span class="highlight">human intuition</span> and <span class="highlight">machine intelligence</span>
+                    </p>
+                </div>
+
+                <!-- Floating Skill Bubbles -->
+                <div class="skill-bubbles-container">
+                    <div class="skill-bubble" data-speed="0.5" data-angle="45">
+                        <i class="fas fa-robot"></i>
+                        <span>AI</span>
+                    </div>
+                    <div class="skill-bubble" data-speed="0.7" data-angle="120">
+                        <i class="fas fa-palette"></i>
+                        <span>Design</span>
+                    </div>
+                    <div class="skill-bubble" data-speed="0.4" data-angle="200">
+                        <i class="fas fa-code"></i>
+                        <span>Code</span>
+                    </div>
+                    <div class="skill-bubble" data-speed="0.6" data-angle="300">
+                        <i class="fas fa-lightbulb"></i>
+                        <span>Product</span>
+                    </div>
+                    <div class="skill-bubble" data-speed="0.8" data-angle="75">
+                        <i class="fas fa-brain"></i>
+                        <span>Strategy</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div class="scroll-indicator">
+                <div class="scroll-line"></div>
+                <span class="scroll-text">SCROLL</span>
+            </div>
+        </section>
+
+        <!-- About Preview Section -->
+        <section class="about-preview">
+            <div class="section-container">
+                <div class="section-header">
+                    <span class="section-number">01</span>
+                    <h2 class="section-title">About</h2>
+                </div>
+                <div class="about-content">
+                    <p class="about-text">
+                        I'm a <span class="accent">Desigineer</span> — someone who exists at the intersection of design and engineering.
+                        Currently pursuing my Master's in Design at Central South University, I bring a unique perspective
+                        to AI product development.
+                    </p>
+                    <div class="about-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" data-count="5">0</span>
+                            <span class="stat-label">Years Experience</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" data-count="20">0</span>
+                            <span class="stat-label">Projects</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" data-count="3">0</span>
+                            <span class="stat-label">Internships</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Work Preview -->
+        <section class="work-preview">
+            <div class="section-container">
+                <div class="section-header">
+                    <span class="section-number">02</span>
+                    <h2 class="section-title">Featured Work</h2>
+                </div>
+                <div class="work-grid">
+                    <a href="resume.html" class="work-card">
+                        <div class="work-card-bg"></div>
+                        <div class="work-card-content">
+                            <span class="work-category">AI Product</span>
+                            <h3 class="work-title">Decision Agent</h3>
+                            <p class="work-desc">Enhanced evaluation scores from 72 to 96</p>
+                        </div>
+                        <div class="work-card-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </a>
+                    <a href="resume.html" class="work-card">
+                        <div class="work-card-bg"></div>
+                        <div class="work-card-content">
+                            <span class="work-category">Intelligent System</span>
+                            <h3 class="work-title">Sentiment Analysis</h3>
+                            <p class="work-desc">Launched MVP in 1 month</p>
+                        </div>
+                        <div class="work-card-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </a>
+                    <a href="cool.html" class="work-card">
+                        <div class="work-card-bg"></div>
+                        <div class="work-card-content">
+                            <span class="work-category">Creative Code</span>
+                            <h3 class="work-title">Interactive Experiments</h3>
+                            <p class="work-desc">Particle systems & visual effects</p>
+                        </div>
+                        <div class="work-card-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact CTA Section -->
+        <section class="contact-cta">
+            <div class="section-container">
+                <div class="cta-content">
+                    <h2 class="cta-title">Let's create something <span class="glitch-word">extraordinary</span></h2>
+                    <p class="cta-subtitle">Open for AI Product Management opportunities</p>
+                    <div class="cta-buttons">
+                        <a href="chat.html" class="cta-btn primary">
+                            <span>Chat with AI Me</span>
+                            <i class="fas fa-robot"></i>
+                        </a>
+                        <a href="resume.html" class="cta-btn secondary">
+                            <span>View Resume</span>
+                            <i class="fas fa-file-alt"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <footer>
-        <div class="social-links">
-            <a href="#">
-                <i class="fab fa-weixin"></i>
-                <div class="wechat-qr">
-                    <img src="images/Wechat.jpg" alt="WeChat QR Code">
-                </div>
-            </a>
-            <a href="https://www.xiaohongshu.com/user/profile/5e4ae8280000000001007545" target="_blank">
-                <i class="fas fa-book"></i>
-            </a>
-            <a href="https://github.com/Halo-Welt" target="_blank">
-                <i class="fab fa-github"></i>
-            </a>
-        </div>
-        <p>&copy; 2025 LIU Xinyu. All rights reserved.</p>
-    </footer>
+    <footer id="footer" role="contentinfo"></footer>
 
-    <script src="js/main.js"></script>
-    <script src="js/audio-visualizer.js"></script>
-    <script type="module" src="js/model-viewer.js"></script>
+    <script src="js/components/navbar.js"></script>
+    <script src="js/components/footer.js"></script>
+    <script src="js/home-new.js"></script>
 </body>
-</html> 
+</html>

@@ -3,29 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume | 刘新煜 - LIU Xinyu</title>
+
+    <!-- Primary Meta Tags -->
+    <title>Resume | LIU Xinyu - AI Product Manager</title>
+    <meta name="title" content="Resume | LIU Xinyu">
+    <meta name="description" content="Resume of LIU Xinyu - AI Product Manager. View education, experience, skills, and contact information.">
+    <meta name="keywords" content="Resume, CV, AI Product Manager, 刘新煜, LIU Xinyu, Portfolio">
+    <meta name="author" content="LIU Xinyu">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://halo-welt.github.io/Personal_Website4myself/resume.html">
+    <meta property="og:title" content="Resume | LIU Xinyu">
+    <meta property="og:description" content="Resume of LIU Xinyu - AI Product Manager">
+    <meta property="og:image" content="images/og-image.svg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://halo-welt.github.io/Personal_Website4myself/resume.html">
+    <meta property="twitter:title" content="Resume | LIU Xinyu">
+    <meta property="twitter:description" content="Resume of LIU Xinyu - AI Product Manager">
+    <meta property="twitter:image" content="images/og-image.svg">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://halo-welt.github.io/Personal_Website4myself/resume.html">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <link rel="apple-touch-icon" href="images/favicon.svg">
+
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/resume.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">DESIGINEER</div>
-        <div class="nav-toggle">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="resume.html" class="active">Resume</a></li>
-            <li><a href="github.html">GitHub</a></li>
-            <li><a href="chat.html">Chat</a></li>
-            <li><a href="cool.html">Cool</a></li>
-        </ul>
-    </nav>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <nav id="navbar" class="navbar" role="navigation" aria-label="Main navigation"></nav>
 
-    <main class="resume-content">
+    <main id="main-content" class="resume-content">
         <div class="resume-container">
             <!-- Availability Banner -->
             <div class="availability-banner">
@@ -178,27 +193,98 @@
                     </div>
                 </div>
             </section>
+
+            <!-- GitHub Projects Section (Collapsible) -->
+            <section class="resume-section github-section">
+                <h2 class="github-toggle" id="github-toggle">
+                    <i class="fas fa-code"></i> GitHub 项目
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </h2>
+                <div class="github-content" id="github-content">
+                    <div class="github-profile">
+                        <div class="profile-info">
+                            <img src="images/profile.JPG" alt="LIU Xinyu" class="profile-pic">
+                            <div class="profile-details">
+                                <div class="profile-text">
+                                    <h3><a href="https://github.com/Halo-Welt" target="_blank">Halo-Welt</a></h3>
+                                    <p class="profile-bio">AI Product Manager | Design & Tech</p>
+                                </div>
+                                <div class="profile-stats">
+                                    <div class="stat">
+                                        <i class="fas fa-book"></i>
+                                        <span class="stat-number">3</span>
+                                        <span class="stat-label">Repos</span>
+                                    </div>
+                                    <div class="stat">
+                                        <i class="fas fa-users"></i>
+                                        <span class="stat-number">4</span>
+                                        <span class="stat-label">Followers</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="repos-grid">
+                        <div class="repo-card">
+                            <h3><a href="https://github.com/Halo-Welt/meituan_test" target="_blank">meituan_test</a></h3>
+                            <p>美团测试相关项目</p>
+                            <div class="repo-stats">
+                                <span><i class="fas fa-star"></i> 0</span>
+                                <span><i class="fas fa-code-branch"></i> 0</span>
+                            </div>
+                            <div class="repo-tags">
+                                <span>HTML</span>
+                            </div>
+                        </div>
+
+                        <div class="repo-card">
+                            <h3><a href="https://github.com/Halo-Welt/Personal_Website4myself" target="_blank">Personal_Website4myself</a></h3>
+                            <p>Personal Website - Just for me.</p>
+                            <div class="repo-stats">
+                                <span><i class="fas fa-star"></i> 0</span>
+                                <span><i class="fas fa-code-branch"></i> 0</span>
+                            </div>
+                            <div class="repo-tags">
+                                <span>HTML</span>
+                                <span>CSS</span>
+                                <span>JavaScript</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     </main>
 
-    <footer>
-        <div class="social-links">
-            <a href="#">
-                <i class="fab fa-weixin"></i>
-                <div class="wechat-qr">
-                    <img src="images/Wechat.jpg" alt="WeChat QR Code">
-                </div>
-            </a>
-            <a href="https://www.xiaohongshu.com/user/profile/5e4ae8280000000001007545" target="_blank">
-                <i class="fas fa-book"></i>
-            </a>
-            <a href="https://github.com/Halo-Welt" target="_blank">
-                <i class="fab fa-github"></i>
-            </a>
-        </div>
-        <p>&copy; 2025 LIU Xinyu. All rights reserved.</p>
-    </footer>
+    <footer id="footer" role="contentinfo"></footer>
 
-    <script src="js/main.js"></script>
+    <script src="js/components/navbar.js"></script>
+    <script src="js/components/footer.js"></script>
+
+    <script>
+        // GitHub section toggle
+        document.addEventListener('DOMContentLoaded', () => {
+            const githubToggle = document.getElementById('github-toggle');
+            const githubContent = document.getElementById('github-content');
+            const toggleIcon = githubToggle?.querySelector('.toggle-icon');
+
+            if (githubToggle && githubContent) {
+                // Initially hide the content
+                githubContent.style.display = 'none';
+                toggleIcon.style.transform = 'rotate(-90deg)';
+
+                githubToggle.addEventListener('click', () => {
+                    if (githubContent.style.display === 'none') {
+                        githubContent.style.display = 'block';
+                        toggleIcon.style.transform = 'rotate(0deg)';
+                    } else {
+                        githubContent.style.display = 'none';
+                        toggleIcon.style.transform = 'rotate(-90deg)';
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

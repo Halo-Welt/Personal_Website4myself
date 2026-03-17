@@ -12,10 +12,10 @@
     width: 100%;
     max-width: 1200px;
     margin: 2rem;
-    background: rgba(42, 42, 42, 0.3);
+    background: var(--glass-bg);
     border-radius: 16px;
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(57, 255, 20, 0.1);
+    border: 1px solid var(--glass-border);
     display: flex;
     height: calc(100vh - 200px);
     overflow: hidden;
@@ -25,8 +25,8 @@
 .chat-sidebar {
     width: 280px;
     min-width: 280px;
-    background: rgba(0, 0, 0, 0.3);
-    border-right: 1px solid rgba(57, 255, 20, 0.1);
+    background: var(--background-secondary);
+    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     padding: 1.5rem;
@@ -36,7 +36,7 @@
     text-align: center;
     margin-bottom: 2rem;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(57, 255, 20, 0.1);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .chat-sidebar-header h2 {
@@ -77,12 +77,12 @@
 }
 
 .mode-card:hover {
-    background: rgba(57, 255, 20, 0.1);
-    border-color: rgba(57, 255, 20, 0.2);
+    background: rgba(217, 119, 87, 0.1);
+    border-color: rgba(217, 119, 87, 0.2);
 }
 
 .mode-card.active {
-    background: rgba(57, 255, 20, 0.15);
+    background: rgba(217, 119, 87, 0.15);
     border-color: var(--primary-color);
 }
 
@@ -90,7 +90,7 @@
     width: 45px;
     height: 45px;
     border-radius: 12px;
-    background: rgba(57, 255, 20, 0.1);
+    background: rgba(217, 119, 87, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -101,7 +101,7 @@
 
 .mode-card.active .mode-icon {
     background: var(--primary-color);
-    color: var(--background-color);
+    color: white;
 }
 
 .mode-info h3 {
@@ -120,7 +120,7 @@
 .chat-tips {
     margin-top: auto;
     padding-top: 1.5rem;
-    border-top: 1px solid rgba(57, 255, 20, 0.1);
+    border-top: 1px solid var(--border-color);
 }
 
 .chat-tips h4 {
@@ -164,7 +164,7 @@
 
 .chat-main .chat-header {
     padding: 1.5rem 2rem;
-    border-bottom: 1px solid rgba(57, 255, 20, 0.1);
+    border-bottom: 1px solid var(--border-color);
     text-align: left;
 }
 
@@ -204,29 +204,30 @@
 .message.user {
     align-self: flex-end;
     background: var(--primary-color);
-    color: var(--background-color);
+    color: white;
 }
 
 .message.ai {
     align-self: flex-start;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--background-secondary);
     color: var(--text-color);
+    border: 1px solid var(--border-color);
 }
 
 /* Input Area */
 .chat-input-container {
     padding: 1.25rem 1.5rem;
-    border-top: 1px solid rgba(57, 255, 20, 0.1);
+    border-top: 1px solid var(--border-color);
     display: flex;
     gap: 1rem;
     align-items: center;
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--background-secondary);
 }
 
 #chat-input {
     flex: 1;
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
+    background: white;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 0.875rem 1rem;
     color: var(--text-color);
@@ -272,18 +273,18 @@
     position: absolute;
     width: 18px;
     height: 18px;
-    background: var(--background-color);
+    background: white;
     border-radius: 3px;
     transition: all 0.1s ease;
 }
 
 #send-button.stop:hover::before {
     transform: scale(1.1);
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(255, 255, 255, 0.9);
 }
 
 #send-button i {
-    color: var(--background-color);
+    color: white;
     font-size: 1.1rem;
     transition: all 0.1s ease;
 }
@@ -313,13 +314,13 @@
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-    background: rgba(57, 255, 20, 0.3);
+    background: rgba(217, 119, 87, 0.3);
     border-radius: 3px;
 }
 
 /* Loading message styles */
 .message.loading {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--background-secondary);
     color: var(--primary-color);
     animation: pulse 1.5s ease-in-out infinite;
 }
@@ -354,7 +355,7 @@
         align-items: center;
         padding: 1rem;
         border-right: none;
-        border-bottom: 1px solid rgba(57, 255, 20, 0.1);
+        border-bottom: 1px solid var(--border-color);
     }
 
     .chat-sidebar-header {

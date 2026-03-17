@@ -3,94 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cool | Desigineer</title>
+
+    <!-- Primary Meta Tags -->
+    <title>Interactive Experiments | LIU Xinyu</title>
+    <meta name="title" content="Interactive Experiments | LIU Xinyu">
+    <meta name="description" content="Interactive particle systems, visual experiments, and creative coding projects by LIU Xinyu.">
+    <meta name="keywords" content="Interactive, Experiments, Particles, Visual Effects, Creative Coding, Three.js">
+    <meta name="author" content="LIU Xinyu">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://halo-welt.github.io/Personal_Website4myself/cool.html">
+    <meta property="og:title" content="Interactive Experiments | LIU Xinyu">
+    <meta property="og:description" content="Interactive particle systems and visual experiments">
+    <meta property="og:image" content="images/og-image.svg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://halo-welt.github.io/Personal_Website4myself/cool.html">
+    <meta property="twitter:title" content="Interactive Experiments | LIU Xinyu">
+    <meta property="twitter:description" content="Interactive particle systems and visual experiments">
+    <meta property="twitter:image" content="images/og-image.svg">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://halo-welt.github.io/Personal_Website4myself/cool.html">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <link rel="apple-touch-icon" href="images/favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/cool.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">DESIGINEER</div>
-        <div class="nav-toggle">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="resume.html">Resume</a></li>
-            <li><a href="github.html">GitHub</a></li>
-            <li><a href="chat.html">Chat</a></li>
-            <li><a href="cool.html" class="active">Cool</a></li>
-        </ul>
-    </nav>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <nav id="navbar" class="navbar" role="navigation" aria-label="Main navigation"></nav>
 
-    <main class="cool-content">
+    <main id="main-content" class="cool-content">
         <div class="cool-container">
             <div class="cool-header">
-                <h1>Cool Experiments</h1>
-                <p>Interactive particle systems and visual experiments</p>
+                <h1>Experiments</h1>
+                <p>Interactive generative art & creative coding</p>
             </div>
 
             <div class="experiments-grid">
-                <!-- Particle Field -->
-                <div class="experiment-card active" data-experiment="particleField">
+                <!-- Flow Field -->
+                <div class="experiment-card active" data-experiment="flowField">
                     <div class="experiment-preview">
-                        <canvas id="particleField-canvas"></canvas>
+                        <canvas id="flowField-canvas"></canvas>
+                        <div class="experiment-controls">
+                            <div class="control-group">
+                                <label>Noise Scale</label>
+                                <input type="range" id="flow-noise" min="0.001" max="0.02" step="0.001" value="0.005">
+                            </div>
+                            <div class="control-group">
+                                <label>Particle Count</label>
+                                <input type="range" id="flow-particles" min="500" max="3000" step="100" value="1500">
+                            </div>
+                        </div>
                     </div>
                     <div class="experiment-info">
-                        <h3><i class="fas fa-network-wired"></i> Particle Field</h3>
-                        <p>Mouse-reactive particles with connection effects. Move your mouse to interact!</p>
-                        <span class="experiment-tag">Interactive</span>
+                        <h3><i class="fas fa-water"></i> Flow Field</h3>
+                        <p>Perlin noise-driven particle flow with organic movement patterns. Adjust parameters to see different behaviors.</p>
+                        <span class="experiment-tag">Generative</span>
                     </div>
                 </div>
 
-                <!-- Gravity Simulation -->
-                <div class="experiment-card" data-experiment="gravity">
+                <!-- Neural Network -->
+                <div class="experiment-card" data-experiment="neural">
                     <div class="experiment-preview">
-                        <canvas id="gravity-canvas"></canvas>
+                        <canvas id="neural-canvas"></canvas>
+                        <div class="experiment-controls">
+                            <div class="control-group">
+                                <label>Node Count</label>
+                                <input type="range" id="neural-nodes" min="10" max="50" step="5" value="25">
+                            </div>
+                            <div class="control-group">
+                                <label>Connection Range</label>
+                                <input type="range" id="neural-range" min="100" max="300" step="20" value="200">
+                            </div>
+                        </div>
                     </div>
                     <div class="experiment-info">
-                        <h3><i class="fas fa-magnet"></i> Gravity Simulation</h3>
-                        <p>Particles attracted by gravity. Click and hold to attract particles!</p>
+                        <h3><i class="fas fa-brain"></i> Neural Network</h3>
+                        <p>Simulated neural network visualization with signal propagation and node activation.</p>
+                        <span class="experiment-tag">AI Visualization</span>
+                    </div>
+                </div>
+
+                <!-- Wave Interference -->
+                <div class="experiment-card" data-experiment="waves">
+                    <div class="experiment-preview">
+                        <canvas id="waves-canvas"></canvas>
+                        <div class="experiment-controls">
+                            <div class="control-group">
+                                <label>Wave Count</label>
+                                <input type="range" id="wave-count" min="2" max="8" step="1" value="4">
+                            </div>
+                            <div class="control-group">
+                                <label>Frequency</label>
+                                <input type="range" id="wave-freq" min="0.01" max="0.1" step="0.01" value="0.03">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="experiment-info">
+                        <h3><i class="fas fa-wave-square"></i> Wave Interference</h3>
+                        <p>Multiple sine waves creating interference patterns. Click to add wave sources.</p>
                         <span class="experiment-tag">Physics</span>
                     </div>
                 </div>
 
-                <!-- Particle Explosions -->
-                <div class="experiment-card" data-experiment="explosion">
+                <!-- Fractal Tree -->
+                <div class="experiment-card" data-experiment="fractal">
                     <div class="experiment-preview">
-                        <canvas id="explosion-canvas"></canvas>
+                        <canvas id="fractal-canvas"></canvas>
+                        <div class="experiment-controls">
+                            <div class="control-group">
+                                <label>Branch Depth</label>
+                                <input type="range" id="fractal-depth" min="4" max="12" step="1" value="8">
+                            </div>
+                            <div class="control-group">
+                                <label>Angle Spread</label>
+                                <input type="range" id="fractal-angle" min="10" max="45" step="5" value="25">
+                            </div>
+                        </div>
                     </div>
                     <div class="experiment-info">
-                        <h3><i class="fas fa-bomb"></i> Particle Explosions</h3>
-                        <p>Click anywhere to trigger particle explosions!</p>
-                        <span class="experiment-tag">Click to interact</span>
-                    </div>
-                </div>
-
-                <!-- Flow Field -->
-                <div class="experiment-card" data-experiment="flowField">
-                    <div class="experiment-preview">
-                        <canvas id="flowField-canvas"></canvas>
-                    </div>
-                    <div class="experiment-info">
-                        <h3><i class="fas fa-water"></i> Flow Field</h3>
-                        <p>Perlin noise-driven particle flow. Mesmerizing organic movement.</p>
-                        <span class="experiment-tag">Relaxing</span>
-                    </div>
-                </div>
-
-                <!-- Color Cycling -->
-                <div class="experiment-card" data-experiment="colorCycling">
-                    <div class="experiment-preview">
-                        <canvas id="colorCycling-canvas"></canvas>
-                    </div>
-                    <div class="experiment-info">
-                        <h3><i class="fas fa-palette"></i> Color Cycling</h3>
-                        <p>Dynamic color shifts based on particle velocity. Mouse repels particles!</p>
-                        <span class="experiment-tag">Visual</span>
+                        <h3><i class="fas fa-code-branch"></i> Fractal Tree</h3>
+                        <p>Recursive branching structure with wind simulation. Watch it grow and sway.</p>
+                        <span class="experiment-tag">Recursive</span>
                     </div>
                 </div>
 
@@ -98,50 +145,53 @@
                 <div class="experiment-card" data-experiment="matrix">
                     <div class="experiment-preview">
                         <canvas id="matrix-canvas"></canvas>
+                        <div class="experiment-controls">
+                            <div class="control-group">
+                                <label>Density</label>
+                                <input type="range" id="matrix-density" min="10" max="50" step="5" value="25">
+                            </div>
+                            <div class="control-group">
+                                <label>Speed</label>
+                                <input type="range" id="matrix-speed" min="1" max="10" step="1" value="3">
+                            </div>
+                        </div>
                     </div>
                     <div class="experiment-info">
-                        <h3><i class="fas fa-code"></i> Matrix Rain</h3>
-                        <p>Classic Matrix digital rain effect with falling characters.</p>
-                        <span class="experiment-tag">Classic</span>
+                        <h3><i class="fas fa-terminal"></i> Matrix Rain</h3>
+                        <p>Classic digital rain effect with falling characters. Move mouse to disturb the flow.</p>
+                        <span class="experiment-tag">Retro</span>
+                    </div>
+                </div>
+
+                <!-- Particle Life -->
+                <div class="experiment-card" data-experiment="life">
+                    <div class="experiment-preview">
+                        <canvas id="life-canvas"></canvas>
+                        <div class="experiment-controls">
+                            <div class="control-group">
+                                <label>Particle Count</label>
+                                <input type="range" id="life-count" min="50" max="200" step="10" value="100">
+                            </div>
+                            <div class="control-group">
+                                <label>Interaction Radius</label>
+                                <input type="range" id="life-radius" min="50" max="150" step="10" value="100">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="experiment-info">
+                        <h3><i class="fas fa-atom"></i> Particle Life</h3>
+                        <p>Artificial life simulation with attraction/repulsion rules. Emergent behavior from simple rules.</p>
+                        <span class="experiment-tag">Emergent</span>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <footer>
-        <div class="social-links">
-            <a href="#">
-                <i class="fab fa-weixin"></i>
-                <div class="wechat-qr">
-                    <img src="images/Wechat.jpg" alt="WeChat QR Code">
-                </div>
-            </a>
-            <a href="https://www.xiaohongshu.com/user/profile/5e4ae8280000000001007545" target="_blank">
-                <i class="fas fa-book"></i>
-            </a>
-            <a href="https://github.com/Halo-Welt" target="_blank">
-                <i class="fab fa-github"></i>
-            </a>
-        </div>
-        <p>&copy; 2025 LIU Xinyu. All rights reserved.</p>
-    </footer>
+    <footer id="footer" role="contentinfo"></footer>
 
-    <div id="splash-cursor-root"></div>
-
-    <script src="js/main.js"></script>
-    <script src="js/particles.js"></script>
+    <script src="js/components/navbar.js"></script>
+    <script src="js/components/footer.js"></script>
     <script src="js/cool.js"></script>
-    <script type="module">
-        import { SplashCursor } from './src/Animations/SplashCursor.js';
-
-        new SplashCursor({
-            size: 8,
-            color: '#39ff14',
-            splashSize: 50,
-            duration: 600,
-            interval: 50
-        });
-    </script>
 </body>
 </html>

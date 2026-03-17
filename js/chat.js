@@ -1,23 +1,11 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const chatMessages = document.getElementById('chat-messages');
-    const chatInput = document.getElementById('chat-input');
-    const sendButton = document.getElementById('send-button');
-    const modeCards = document.querySelectorAll('.mode-card');
-    const modeDescription = document.getElementById('mode-description');
-    const chatTitle = document.getElementById('chat-title');
-    const API_URL = 'http://localhost:3000/api/chat';
+/**
+ * Chat Application - Works with Vercel Edge Function API
+ * Deploy API to Vercel, frontend to GitHub Pages
+ */
 
-    // Current mode
-    let currentMode = 'consultant';
-    let conversationHistory = [];
-    let isServerConnected = false;
-    let retryCount = 0;
-    let currentController = null;
-    const maxRetries = 3;
-
-    // System prompts for different modes
-    const systemPrompts = {
-        consultant: `你是一位在设计学和工程学领域有着深厚造诣的专家。你具备以下特点：
+// System prompts embedded (prompts also available in /prompts folder)
+const SYSTEM_PROMPTS = {
+    consultant: `你是一位在设计学和工程学领域有着深厚造诣的专家。你具备以下特点：
 
 1. 设计专长：
 - 精通用户体验（UX）和用户界面（UI）设计
@@ -40,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 请以专业、友好的方式回答问题，并在适当时结合实例说明。`,
 
-        resume: `你是刘新煜的AI简历助手。请根据以下个人信息回答关于刘新煜的问题：
+    resume: `你是刘新煜的AI简历助手。请根据以下个人信息回答关于刘新煜的问题：
 
 基本信息：
 - 姓名：刘新煜
@@ -84,36 +72,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
 请以第一人称"我"来回答问题，展现刘新煜的专业能力和个人特质。
 回答要简洁、专业，适合向招聘方展示。`
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
+    const sendButton = document.getElementById('send-button');
+    const modeCards = document.querySelectorAll('.mode-card');
+    const modeDescription = document.getElementById('mode-description');
+    const chatTitle = document.getElementById('chat-title');
+    const API_URL = CONFIG.getChatUrl();
+
+    // Current mode
+    let currentMode = 'consultant';
+    let conversationHistory = [];
+    let currentController = null;
+
+    // Mode configurations
+    const modeConfig = {
+        consultant: {
+            description: 'Design + Engineering Expert',
+            title: 'Professional Mode',
+            welcome: "你好！我是一位专注于设计学和工程学的AI专家。我可以：\n\n" +
+                    "🎨 帮你解决设计相关问题（UI/UX、视觉设计、设计系统等）\n" +
+                    "🔧 协助处理工程技术难题（架构设计、代码优化、性能提升等）\n" +
+                    "💡 提供专业的建议和创新思路\n\n" +
+                    "请告诉我你遇到了什么问题，我很乐意帮助你！"
+        },
+        resume: {
+            description: 'About Liu Xinyu',
+            title: 'Resume Mode',
+            welcome: "你好！我是刘新煜的AI简历助手。\n\n" +
+                    "你可以向我了解关于刘新煜的任何信息：\n\n" +
+                    "📚 教育背景（中南大学、同济大学）\n" +
+                    "💼 实习经历（字节跳动、曙光天玑）\n" +
+                    "⭐ 个人技能与评价\n" +
+                    "📧 联系方式（13319323832）\n\n" +
+                    "有什么想了解的吗？"
+        }
     };
 
-    // Mode descriptions
-    const modeDescriptions = {
-        consultant: 'Design + Engineering Expert',
-        resume: 'About Liu Xinyu'
-    };
-
-    // Mode titles
-    const modeTitles = {
-        consultant: 'Professional Mode',
-        resume: 'Resume Mode'
-    };
-
-    // Welcome messages for different modes
-    const welcomeMessages = {
-        consultant: "你好！我是一位专注于设计学和工程学的AI专家。我可以：\n\n" +
-                   "🎨 帮你解决设计相关问题（UI/UX、视觉设计、设计系统等）\n" +
-                   "🔧 协助处理工程技术难题（架构设计、代码优化、性能提升等）\n" +
-                   "💡 提供专业的建议和创新思路\n\n" +
-                   "请告诉我你遇到了什么问题，我很乐意帮助你！",
-
-        resume: "你好！我是刘新煜的AI简历助手。\n\n" +
-                "你可以向我了解关于刘新煜的任何信息：\n\n" +
-                "📚 教育背景（中南大学、同济大学）\n" +
-                "💼 实习经历（字节跳动、曙光天玑）\n" +
-                "⭐ 个人技能与评价\n" +
-                "📧 联系方式（13319323832）\n\n" +
-                "有什么想了解的吗？"
-    };
+    // Initialize
+    function init() {
+        loadConversationHistory();
+        if (chatMessages.children.length === 0) {
+            showWelcomeMessage();
+        }
+        sendButton.disabled = false;
+    }
 
     // Load conversation history from localStorage
     function loadConversationHistory() {
@@ -121,7 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const saved = localStorage.getItem('chat_conversation_' + currentMode);
             if (saved) {
                 conversationHistory = JSON.parse(saved);
-                // Display saved messages (except system messages)
                 conversationHistory.forEach(msg => {
                     if (msg.role !== 'system') {
                         addMessage(msg.content, msg.role === 'user' ? 'user' : 'ai', false);
@@ -136,7 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Save conversation history to localStorage
     function saveConversationHistory() {
         try {
-            // Keep only user and assistant messages (not system)
             const toSave = conversationHistory.filter(msg => msg.role !== 'system');
             localStorage.setItem('chat_conversation_' + currentMode, JSON.stringify(toSave));
         } catch (e) {
@@ -158,8 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
         modeCards.forEach(card => {
             card.classList.toggle('active', card.dataset.mode === mode);
         });
-        modeDescription.textContent = modeDescriptions[mode];
-        chatTitle.textContent = modeTitles[mode];
+        modeDescription.textContent = modeConfig[mode].description;
+        chatTitle.textContent = modeConfig[mode].title;
 
         // Clear and reload for new mode
         chatMessages.innerHTML = '';
@@ -173,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Show welcome message
     function showWelcomeMessage() {
-        addMessage(welcomeMessages[currentMode], 'ai');
+        addMessage(modeConfig[currentMode].welcome, 'ai');
     }
 
     // Mode card event listeners
@@ -203,15 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    chatInput.addEventListener('compositionend', (e) => {
-        if (e.data && chatInput.value.trim() !== '') {
-            const lastChar = e.data[e.data.length - 1];
-            if (lastChar === '\n') {
-                sendMessage();
-            }
-        }
-    });
-
     // Send button click
     sendButton.addEventListener('click', () => {
         if (currentController) {
@@ -221,75 +216,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Server connection
-    async function startServer() {
-        try {
-            const response = await fetch('http://localhost:3000/start-server', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (response.ok) {
-                console.log('Server started successfully');
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error('Failed to start server:', error);
-            return false;
-        }
-    }
-
-    async function checkServerConnection() {
-        try {
-            const response = await fetch('http://localhost:3000/');
-            isServerConnected = response.ok;
-
-            if (!isServerConnected && retryCount < maxRetries) {
-                retryCount++;
-                console.log(`Trying to start server (${retryCount}/${maxRetries})...`);
-
-                const serverStarted = await startServer();
-                if (serverStarted) {
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    return checkServerConnection();
-                }
-
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                return checkServerConnection();
-            }
-
-            if (!isServerConnected) {
-                addMessage("提示：正在尝试启动聊天服务器，请稍候...", 'ai');
-                sendButton.disabled = true;
-            } else {
-                sendButton.disabled = false;
-                retryCount = 0;
-            }
-        } catch (error) {
-            console.error('Server connection error:', error);
-            isServerConnected = false;
-            addMessage("提示：正在尝试启动聊天服务器，请稍候...", 'ai');
-
-            const serverStarted = await startServer();
-            if (serverStarted) {
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                return checkServerConnection();
-            }
-
-            sendButton.disabled = true;
-        }
-    }
-
     // Update send button state
     function updateSendButton(isThinking) {
         if (isThinking) {
             sendButton.classList.add('stop');
+            sendButton.innerHTML = '<i class="fas fa-stop"></i>';
             sendButton.title = 'Click to stop';
         } else {
             sendButton.classList.remove('stop');
+            sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>';
             sendButton.title = 'Send message';
         }
     }
@@ -306,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Typewriter effect
-    async function typewriterEffect(messageDiv, text, delay = 25) {
+    async function typewriterEffect(messageDiv, text, delay = 15) {
         let currentText = '';
         const chars = text.split('');
 
@@ -316,44 +251,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             currentText += char;
-
-            // Enhanced markdown rendering
             const formattedText = formatMarkdown(currentText);
             messageDiv.innerHTML = formattedText;
-
             chatMessages.scrollTop = chatMessages.scrollHeight;
-            await new Promise(resolve => setTimeout(resolve, delay));
+
+            // Random delay for more natural feel
+            const randomDelay = delay + Math.random() * 10;
+            await new Promise(resolve => setTimeout(resolve, randomDelay));
         }
     }
 
     // Format markdown
     function formatMarkdown(text) {
-        // Escape HTML
         let formatted = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-        // Code blocks (must be before inline code)
         formatted = formatted.replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>');
-
-        // Inline code
         formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
-
-        // Bold
         formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-
-        // Italic
         formatted = formatted.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-
-        // Line breaks to <br>
         formatted = formatted.replace(/\n/g, '<br>');
-
-        // Lists
-        formatted = formatted.replace(/<br>(\s*[-*•]\s+)/g, '<li>$1</li>');
-        formatted = formatted.replace(/(<li>.*<\/li>)+/g, '<ul>$&</ul>');
-
         return formatted;
     }
 
-    // Send message
+    // Send message - Try Vercel API first, fallback to direct
     async function sendMessage() {
         const message = chatInput.value.trim();
         if (!message) return;
@@ -369,37 +288,74 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const loadingDiv = document.createElement('div');
         loadingDiv.classList.add('message', 'ai', 'loading');
-        loadingDiv.textContent = 'Thinking...';
+        loadingDiv.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
         chatMessages.appendChild(loadingDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
         try {
-            if (!isServerConnected) {
-                await checkServerConnection();
-                if (!isServerConnected) {
-                    throw new Error('Server not running. Please run npm start');
-                }
-            }
-
             currentController = new AbortController();
             updateSendButton(true);
 
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    messages: [
-                        {
-                            role: 'system',
-                            content: systemPrompts[currentMode]
-                        },
-                        ...conversationHistory
-                    ]
-                }),
-                signal: currentController.signal
-            });
+            let response;
+            let apiUrl = API_URL;
+
+            // Check if we're in development mode (file:// or localhost)
+            const isDevelopment = window.location.protocol === 'file:' ||
+                                 window.location.hostname === 'localhost' ||
+                                 window.location.hostname === '127.0.0.1' ||
+                                 window.location.hostname === ''; // Some browsers return empty hostname for file://
+
+            console.log('Current protocol:', window.location.protocol);
+            console.log('Current hostname:', window.location.hostname);
+            console.log('Is development mode:', isDevelopment);
+            console.log('API_URL:', API_URL);
+
+            if (isDevelopment) {
+                // In development, call Ofox.ai API directly
+                // Note: This exposes the API key in client-side code, which is not secure for production
+                const apiKey = 'sk-of-PbQmRwcOVRyoNLEkEyfpijrfwTJwsHEFrJbmOVyWkCsjeKmbTXqdWRkeHohFCYdm';
+
+                response = await fetch('https://api.ofox.ai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'z-ai//',
+                        messages: [
+                            { role: 'system', content: SYSTEM_PROMPTS[currentMode] },
+                            ...conversationHistory
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 2000
+                    }),
+                    signal: currentController.signal
+                });
+
+                // Log response for debugging
+                console.log('API Response status:', response.status);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('API Error response:', errorText);
+                    throw new Error(`API returned ${response.status}: ${errorText}`);
+                }
+            } else {
+                // In production, use Vercel Edge Function
+                response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        messages: [
+                            { role: 'system', content: SYSTEM_PROMPTS[currentMode] },
+                            ...conversationHistory
+                        ]
+                    }),
+                    signal: currentController.signal
+                });
+            }
 
             if (currentController === null) {
                 loadingDiv.remove();
@@ -407,7 +363,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (!response.ok) {
-                throw new Error('API request failed');
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || `API error: ${response.status}`);
             }
 
             const data = await response.json();
@@ -437,20 +394,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 content: aiResponse
             });
 
-            // Save to localStorage
             saveConversationHistory();
 
-            if (conversationHistory.length > 10) {
-                conversationHistory = conversationHistory.slice(-10);
+            // Keep only last 20 messages
+            if (conversationHistory.length > 20) {
+                conversationHistory = conversationHistory.slice(-20);
             }
 
         } catch (error) {
             console.error('Error sending message:', error);
             loadingDiv.remove();
+
             if (error.name === 'AbortError') {
                 addMessage('对话已中止', 'ai');
             } else {
-                addMessage(`错误: ${error.message}`, 'ai');
+                // Show error with deployment instructions
+                const errorDiv = document.createElement('div');
+                errorDiv.classList.add('message', 'ai', 'error');
+                errorDiv.innerHTML = `
+                    <p><strong>⚠️ ${error.message}</strong></p>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                        要使用聊天功能，需要部署API服务：<br>
+                        1. 部署到 Vercel: <code>vercel</code><br>
+                        2. 添加环境变量: <code>DEEPSEEK_API_KEY</code><br>
+                        3. 更新 <code>js/config.js</code> 中的 API_URL<br>
+                        4. 或在本地运行: <code>npm start</code>
+                    </p>
+                `;
+                chatMessages.appendChild(errorDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
         } finally {
             currentController = null;
@@ -473,20 +445,6 @@ document.addEventListener('DOMContentLoaded', () => {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    // Initial setup
-    checkServerConnection().then(() => {
-        if (isServerConnected) {
-            loadConversationHistory();
-            if (chatMessages.children.length === 0) {
-                showWelcomeMessage();
-            }
-        }
-    });
-
-    // Periodic server check
-    setInterval(async () => {
-        if (!isServerConnected) {
-            await checkServerConnection();
-        }
-    }, 60000);
+    // Initialize
+    init();
 });

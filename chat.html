@@ -3,30 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat with AI | Desigineer</title>
+
+    <!-- Primary Meta Tags -->
+    <title>AI Chat | LIU Xinyu</title>
+    <meta name="title" content="AI Chat | LIU Xinyu">
+    <meta name="description" content="Chat with AI about design, engineering, or learn more about LIU Xinyu's background and experience.">
+    <meta name="keywords" content="AI Chat, Design, Engineering, LIU Xinyu, Product Manager">
+    <meta name="author" content="LIU Xinyu">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://halo-welt.github.io/Personal_Website4myself/chat.html">
+    <meta property="og:title" content="AI Chat | LIU Xinyu">
+    <meta property="og:description" content="Chat with AI about design, engineering, or learn more about LIU Xinyu">
+    <meta property="og:image" content="images/og-image.svg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://halo-welt.github.io/Personal_Website4myself/chat.html">
+    <meta property="twitter:title" content="AI Chat | LIU Xinyu">
+    <meta property="twitter:description" content="Chat with AI about design, engineering, or learn more about LIU Xinyu">
+    <meta property="twitter:image" content="images/og-image.svg">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://halo-welt.github.io/Personal_Website4myself/chat.html">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <link rel="apple-touch-icon" href="images/favicon.svg">
+
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/chat.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">DESIGINEER</div>
-        <div class="nav-toggle">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="resume.html">Resume</a></li>
-            <li><a href="github.html">GitHub</a></li>
-            <li><a href="chat.html" class="active">Chat</a></li>
-            <li><a href="cool.html">Cool</a></li>
-        </ul>
-    </nav>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <nav id="navbar" class="navbar" role="navigation" aria-label="Main navigation"></nav>
 
-    <main class="chat-content">
+    <main id="main-content" class="chat-content">
         <div class="chat-container">
             <!-- Left Panel: Mode Selection & Info -->
             <div class="chat-sidebar">
@@ -35,8 +50,8 @@
                     <p>Choose a mode to start</p>
                 </div>
 
-                <div class="mode-selector">
-                    <button class="mode-card active" data-mode="consultant">
+                <div class="mode-selector" role="group" aria-label="Chat mode selection">
+                    <button class="mode-card active" data-mode="consultant" aria-label="Professional mode: Design and engineering expert">
                         <div class="mode-icon">
                             <i class="fas fa-lightbulb"></i>
                         </div>
@@ -46,7 +61,7 @@
                         </div>
                     </button>
 
-                    <button class="mode-card" data-mode="resume">
+                    <button class="mode-card" data-mode="resume" aria-label="Resume mode: Learn about Liu Xinyu">
                         <div class="mode-icon">
                             <i class="fas fa-user-graduate"></i>
                         </div>
@@ -77,8 +92,9 @@
                     <!-- Messages will be added here dynamically -->
                 </div>
                 <div class="chat-input-container">
-                    <textarea id="chat-input" placeholder="Type your message here..." rows="1"></textarea>
-                    <button id="send-button">
+                    <label for="chat-input" class="visually-hidden">Type your message</label>
+                    <textarea id="chat-input" placeholder="Type your message here..." rows="1" aria-label="Type your message"></textarea>
+                    <button id="send-button" aria-label="Send message">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
@@ -86,24 +102,11 @@
         </div>
     </main>
 
-    <footer>
-        <div class="social-links">
-            <a href="#">
-                <i class="fab fa-weixin"></i>
-                <div class="wechat-qr">
-                    <img src="images/Wechat.jpg" alt="WeChat QR Code">
-                </div>
-            </a>
-            <a href="https://www.xiaohongshu.com/user/profile/5e4ae8280000000001007545" target="_blank">
-                <i class="fas fa-book"></i>
-            </a>
-            <a href="https://github.com/Halo-Welt" target="_blank">
-                <i class="fab fa-github"></i>
-            </a>
-        </div>
-        <p>&copy; 2025 LIU Xinyu. All rights reserved.</p>
-    </footer>
+    <footer id="footer" role="contentinfo"></footer>
 
+    <script src="js/components/navbar.js"></script>
+    <script src="js/components/footer.js"></script>
+    <script src="js/config.js"></script>
     <script src="js/main.js"></script>
     <script src="js/chat.js"></script>
 </body>
