@@ -47,6 +47,8 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
 }
 
 .chat-sidebar-header p {

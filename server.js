@@ -116,7 +116,7 @@ async function analyzeMessagesAsync() {
 
         const apiKey = process.env.;
         if (!apiKey) {
-            console.log(', skipping analysis');
+            console.log('No API key, skipping analysis');
             return;
         }
 
@@ -142,7 +142,7 @@ ${messagesText}
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: '-chat',
+                model: '',
                 messages: [{ role: 'user', content: prompt }],
                 temperature: 0.5,
                 max_tokens: 1500
@@ -292,7 +292,7 @@ app.post('/api/chat', async (req, res) => {
         }
 
         // 使用环境变量中的API key
-        const apiKey = process.env.DEEPSEEK_API_KEY || 'sk-8465def446a94835a95996382d3996f9';
+        const apiKey = process.env.DEEPSEEK_API_KEY ;
         const apiUrl = 'https://api.deepseek.com/v1/chat/completions';
 
         console.log('Making request to DeepSeek API...');
