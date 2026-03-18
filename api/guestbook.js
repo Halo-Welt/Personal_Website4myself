@@ -1,126 +1,95 @@
 // Vercel Serverless Function for Guestbook API
 // 使用 JSONBin.io 存储数据
 
-export const config = {
-  runtime: 'edge',
-};
-
 const JSONBIN_BASE_URL = 'https://api.jsonbin.io/v3';
 const BIN_ID = process.env.JSONBIN_BIN_ID;
 const MASTER_KEY = process.env.JSONBIN_MASTER_KEY;
+const = process.env.;
 
-export default async function handler(request) {
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
+export default async function handler(request, response) {
+  // Set CORS headers
+  response.setHeader('Access-Control-Allow-Origin', '*');
+  response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
+  // Handle preflight
   if (request.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return response.status(200).end();
   }
 
   try {
-    const url = new URL(request.url);
-    const path = url.pathname;
+    const url = request.url;
+    const path = url.split('?')[0];
 
-    // GET - 获取留言
-    if (request.method === 'GET' && path.endsWith('/api/guestbook')) {
-      return await getMessages(corsHeaders);
+    // GET /api/guestbook - 获取留言
+    if (request.method === 'GET' && path.endsWith('/guestbook')) {
+      return await getMessages(response);
     }
 
-    // GET - 获取分析结果
-    if (request.method === 'GET' && path.endsWith('/api/guestbook/analyze')) {
-      return await getAnalysis(corsHeaders);
+    // GET /api/guestbook/analyze - 获取分析结果
+    if (request.method === 'GET' && path.endsWith('/analyze')) {
+      return await getAnalysis(response);
     }
 
-    // POST - 提交留言
-    if (request.method === 'POST' && path.endsWith('/api/guestbook')) {
-      const body = await request.json();
-      return await addMessage(body, corsHeaders);
+    // POST /api/guestbook - 提交留言
+    if (request.method === 'POST' && path.endsWith('/guestbook')) {
+      return await addMessage(request.body, response);
     }
 
-    // POST - 手动分析
-    if (request.method === 'POST' && path.endsWith('/api/guestbook/analyze')) {
-      return await triggerAnalysis(corsHeaders);
+    // POST /api/guestbook/analyze - 手动分析
+    if (request.method === 'POST' && path.endsWith('/analyze')) {
+      return await triggerAnalysis(response);
     }
 
-    return new Response(JSON.stringify({ error: 'Not found' }), {
-      status: 404,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return response.status(404).json({ error: 'Not found' });
   } catch (error) {
     console.error('Error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return response.status(500).json({ error: error.message });
   }
 }
 
 // 获取留言
-async function getMessages(corsHeaders) {
+async function getMessages(response) {
   if (!BIN_ID) {
-    return new Response(JSON.stringify({ error: 'Bin not configured' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return response.status(500).json({ error: 'Bin not configured' });
   }
 
   try {
-    const response = await fetch(`${JSONBIN_BASE_URL}/b/${BIN_ID}/latest`, {
-      headers: {
-        'X-Master-Key': MASTER_KEY || '',
-      },
+    const apiResponse = await fetch(`${JSONBIN_BASE_URL}/b/${BIN_ID}/latest`, {
+      headers: { 'X-Master-Key': MASTER_KEY || '' },
     });
 
-    if (!response.ok) {
-      // 如果 bin 不存在，返回空数组
-      if (response.status === 404) {
-        return new Response(JSON.stringify([]), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+    if (!apiResponse.ok) {
+      if (apiResponse.status === 404) {
+        return response.status(200).json([]);
       }
-      throw new Error(`HTTP ${response.status}`);
+      throw new Error(`HTTP ${apiResponse.status}`);
     }
 
-    const data = await response.json();
+    const data = await apiResponse.json();
     const messages = data.record?.messages || [];
-    return new Response(JSON.stringify(messages.slice(0, 50).reverse()), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+
+    return response.status(200).json(messages.slice(0, 50).reverse());
   } catch (error) {
     console.error('Get messages error:', error);
-    return new Response(JSON.stringify({ error: 'Failed to get messages' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return response.status(500).json({ error: 'Failed to get messages' });
   }
 }
 
 // 添加留言
-async function addMessage(body, corsHeaders) {
+async function addMessage(body, response) {
   const { name, message } = body;
 
   if (!name || !message) {
-    return new Response(JSON.stringify({ error: 'Name and message required' }), {
-      status: 400,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return response.status(400).json({ error: 'Name and message required' });
   }
 
   if (name.length > 50 || message.length > 500) {
-    return new Response(JSON.stringify({ error: 'Input too long' }), {
-      status: 400,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return response.status(400).json({ error: 'Input too long' });
   }
 
   if (!BIN_ID) {
-    return new Response(JSON.stringify({ error: 'Bin not configured' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return response.status(500).json({ error: 'Bin not configured' });
   }
 
   try {
@@ -175,94 +144,83 @@ async function addMessage(body, corsHeaders) {
 
     console.log('Message saved:', newMessage.id);
 
-    // 异步触发分析
-    triggerAnalysisInternal().catch(console.error);
+    // 异步触发分析（不阻塞响应）
+    triggerAnalysisInternal(messages).catch(console.error);
 
-    return new Response(JSON.stringify(newMessage), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return response.status(200).json(newMessage);
   } catch (error) {
     console.error('Add message error:', error);
-    return new Response(JSON.stringify({ error: 'Failed to save message' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return response.status(500).json({ error: 'Failed to save message' });
   }
 }
 
 // 获取分析结果
-async function getAnalysis(corsHeaders) {
+async function getAnalysis(response) {
   if (!BIN_ID) {
-    return new Response(JSON.stringify({ clusters: [], summary: '' }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return response.status(200).json({ clusters: [], summary: '' });
   }
 
   try {
-    const response = await fetch(`${JSONBIN_BASE_URL}/b/${BIN_ID}/latest`, {
+    const apiResponse = await fetch(`${JSONBIN_BASE_URL}/b/${BIN_ID}/latest`, {
       headers: { 'X-Master-Key': MASTER_KEY || '' },
     });
 
-    if (!response.ok) {
-      return new Response(JSON.stringify({ clusters: [], summary: '' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    if (!apiResponse.ok) {
+      return response.status(200).json({ clusters: [], summary: '' });
     }
 
-    const data = await response.json();
+    const data = await apiResponse.json();
     const analysis = data.record?.analysis || { clusters: [], summary: '' };
 
-    return new Response(JSON.stringify(analysis), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return response.status(200).json(analysis);
   } catch (error) {
     console.error('Get analysis error:', error);
-    return new Response(JSON.stringify({ clusters: [], summary: '' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return response.status(200).json({ clusters: [], summary: '' });
   }
 }
 
 // 手动触发分析
-async function triggerAnalysis(corsHeaders) {
+async function triggerAnalysis(response) {
   try {
-    await triggerAnalysisInternal();
-    return await getAnalysis(corsHeaders);
+    const analysis = await triggerAnalysisInternal();
+    return response.status(200).json(analysis);
   } catch (error) {
     console.error('Trigger analysis error:', error);
-    return new Response(JSON.stringify({ error: 'Analysis failed' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return response.status(500).json({ error: 'Analysis failed' });
   }
 }
 
 // 内部分析逻辑
-async function triggerAnalysisInternal() {
-  if (!BIN_ID) return;
+async function triggerAnalysisInternal(existingMessages) {
+  if (!BIN_ID) {
+    return { clusters: [], summary: '' };
+  }
 
   try {
     // 获取数据
-    const getResponse = await fetch(`${JSONBIN_BASE_URL}/b/${BIN_ID}/latest`, {
-      headers: { 'X-Master-Key': MASTER_KEY || '' },
-    });
+    let messages = existingMessages;
+    if (!messages) {
+      try {
+        const getResponse = await fetch(`${JSONBIN_BASE_URL}/b/${BIN_ID}/latest`, {
+          headers: { 'X-Master-Key': MASTER_KEY || '' },
+        });
 
-    if (!getResponse.ok) return;
-
-    const data = await getResponse.json();
-    const messages = data.record?.messages || [];
-
-    if (messages.length === 0) {
-      // 空数据，更新分析为空
-      await saveAnalysis({ clusters: [], summary: '', lastUpdate: new Date().toISOString() });
-      return;
+        if (getResponse.ok) {
+          const data = await getResponse.json();
+          messages = data.record?.messages || [];
+        }
+      } catch (e) {
+        // 忽略
+      }
     }
 
-    const apiKey = process.env.;
-    if (!apiKey) {
+    if (!messages || messages.length === 0) {
+      return { clusters: [], summary: '', lastUpdate: new Date().toISOString() };
+    }
+
+    if (!) {
       console.log('No API key, skipping analysis');
-      return;
+      return { clusters: [], summary: 'Analysis unavailable', lastUpdate: new Date().toISOString() };
     }
 
     // 调用 LLM 分析
@@ -284,10 +242,10 @@ ${messagesText}
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
+        'Authorization': `Bearer ${}`,
       },
       body: JSON.stringify({
-        model: '-chat',
+        model: '',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.5,
         max_tokens: 1500,
@@ -305,43 +263,28 @@ ${messagesText}
     try {
       analysis = JSON.parse(analysisText);
     } catch (e) {
-      console.error('Failed to parse LLM response');
-      return;
+      console.error('Failed to parse LLM response:', analysisText);
+      return { clusters: [], summary: 'Analysis parsing failed', lastUpdate: new Date().toISOString() };
     }
 
     analysis.lastUpdate = new Date().toISOString();
 
     // 保存分析结果
-    await saveAnalysis(analysis);
+    await saveAnalysis(analysis, messages);
 
     console.log('Analysis saved:', analysis);
+    return analysis;
   } catch (error) {
     console.error('Analysis error:', error);
+    return { clusters: [], summary: 'Analysis failed', lastUpdate: new Date().toISOString() };
   }
 }
 
 // 保存分析结果
-async function saveAnalysis(analysis) {
+async function saveAnalysis(analysis, messages) {
   if (!BIN_ID) return;
 
   try {
-    // 获取现有数据
-    let messages = [];
-
-    try {
-      const getResponse = await fetch(`${JSONBIN_BASE_URL}/b/${BIN_ID}/latest`, {
-        headers: { 'X-Master-Key': MASTER_KEY || '' },
-      });
-
-      if (getResponse.ok) {
-        const data = await getResponse.json();
-        messages = data.record?.messages || [];
-      }
-    } catch (e) {
-      // 忽略
-    }
-
-    // 保存
     await fetch(`${JSONBIN_BASE_URL}/b/${BIN_ID}`, {
       method: 'PUT',
       headers: {
