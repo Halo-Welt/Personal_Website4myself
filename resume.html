@@ -42,17 +42,11 @@
 
     <main id="main-content" class="resume-content">
         <div class="resume-container">
-            <!-- Availability Banner -->
-            <div class="availability-banner">
-                <i class="fas fa-briefcase"></i>
-                <p>求职意向: <span>AI产品经理</span> | 可到岗: <span>3个月内</span> | 可实习: <span>3～6个月</span></p>
-            </div>
-
             <!-- Header -->
             <header class="resume-header">
                 <img src="images/profile.JPG" alt="LIU Xinyu" class="profile-image">
                 <h1>刘新煜</h1>
-                <p class="subtitle">AI产品经理</p>
+                <p class="subtitle">AI 产品经理</p>
                 <div class="contact-row">
                     <a href="tel:13319323832" class="contact-item">
                         <i class="fas fa-phone"></i>
@@ -75,26 +69,30 @@
 
                 <div class="education-item">
                     <div class="education-info">
-                        <h3>中南大学（保研）| 硕士 | 设计学</h3>
-                        <p>2024.09 – 2027.06</p>
+                        <div class="education-header">
+                            <h3>中南大学（保研）| 硕士 | 设计学</h3>
+                            <p class="time">2024.09 – 2027.06</p>
+                        </div>
                         <p style="margin-top: 0.5rem; opacity: 0.8;">
-                            担任导师组设计实验室主理人，组织筹办读书会、论文分享会等活动
+                            校园经历：担任导师组设计实验室主理人，组织筹办读书会、论文分享会等活动。
                         </p>
-                        <p style="margin-top: 0.5rem; color: var(--primary-color);">
-                            2025年 中南大学校级二等奖学金 | 2024年 研究生学业奖学金 | 2024年 香港当代设计奖
+                        <p style="margin-top: 0.5rem;">
+                            所获荣誉：2025年获得中南大学校级二等奖学金，2024年获得研究生学业奖学金，2024年获得香港当代设计奖。
                         </p>
                     </div>
                 </div>
 
                 <div class="education-item">
                     <div class="education-info">
-                        <h3>同济大学 | 本科 | 工业设计</h3>
-                        <p>2019.09 – 2024.06</p>
+                        <div class="education-header">
+                            <h3>同济大学 | 本科 | 工业设计</h3>
+                            <p class="time">2019.09 – 2024.06</p>
+                        </div>
                         <p style="margin-top: 0.5rem; opacity: 0.8;">
-                            班级学习委员、同济大学红十字会分部门组长、同济大学学生会分部门组长
+                            校园经历：担任班级学习委员、同济大学红十字会分部门组长、同济大学学生会分部门组长；负责班级日常管理，校园活动筹划，组织参与过疫苗接种、献血、校女生节等大型活动。
                         </p>
-                        <p style="margin-top: 0.5rem; color: var(--primary-color);">
-                            2022、2023年 同济大学校级三等奖学金 | 2019年 新生院优秀班干部
+                        <p style="margin-top: 0.5rem;">
+                            所获荣誉：2022、2023年获得同济大学校级三等奖学金，2019年获得新生院优秀班干部。
                         </p>
                     </div>
                 </div>
@@ -104,22 +102,78 @@
             <section class="resume-section">
                 <h2><i class="fas fa-briefcase"></i> 实习经历</h2>
 
-                <div class="experience-item">
-                    <h3>字节跳动 | 飞书多维表格 (Lark Base AI) | AI产品经理</h3>
-                    <p class="company">2025.09 – 2026.02</p>
-                    <ul>
-                        <li><strong>Decision Agent 意图分流智能体项目：</strong>负责评测与优化，评测分数由72分提升至96分（+33%）；搭建1200+条自动化评测体系，评测效率由3人天提升至3小时；推动Agent架构策略优化，实现快速接入与敏捷迭代</li>
-                        <li><strong>Permission Agent 高级权限智能体评测集构建：</strong>从广厚深三个维度构建197条覆盖创建、修改、问询、核查及协作共创场景的高质量评测题</li>
-                        <li><strong>单行总结项目：</strong>参与PRD设计与产品方案推进；设计"总结-洞察-建议"三段式结构化输出框架</li>
+                <div class="experience-item" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.75rem;">
+                        <h3 style="flex: 1;">字节跳动 | 飞书多维表格 (Lark Base AI) | AI 产品经理</h3>
+                        <p class="time">2025.09 – 2026.02</p>
+                    </div>
+                    <ul style="margin: 0; padding: 0;">
+                        <li style="position: relative; padding-left: 1.5rem; margin-bottom: 0.75rem;">
+                            <span style="color: var(--primary-color); position: absolute; left: 0;">▶</span>
+                            <strong>侧边栏AI 意图分流智能体 (Decision Agent) 项目</strong><br>
+                            <div style="margin-left: 1rem; margin-top: 0.5rem;">
+                                <p style="margin-bottom: 0.75rem; margin-top: 0;">
+                                    <span style="color: var(--primary-color);">▸</span> <strong>背景&目标</strong>：多维表格侧边栏AI集成多个Domain Agent，需要构建高准确率的意图分流机制，实现用户Query的快速识别与智能路由，降低系统耦合度并支撑持续迭代。
+                                </p>
+                                <p style="margin-bottom: 0.75rem; margin-top: 0;">
+                                    <span style="color: var(--primary-color);">▸</span> <strong>职责&成果</strong>：负责Decision Agent的全部评测与优化工作。评测分数由72分提高到了96分（+33%）；评测效率由3人天提升至自动化3小时；实现支持新Domain Agent的快速接入与敏捷迭代。
+                                </p>
+                                <div style="margin-top: 0.5rem;">
+                                    <p style="margin-bottom: 0.75rem; margin-top: 0;">
+                                        <span style="color: var(--primary-color);">·</span> <strong>搭建自动化评测体系</strong>：构建1200+条高质量评测集与Ground Truth，针对Decision Agent“仅验证分流正确性”的特点设计自动化评测流程；AI Coding开发评测解析、评分与归因系统，实现Badcase自动分类与问题定位。
+                                    </p>
+                                    <p style="margin-bottom: 0.75rem; margin-top: 0;">
+                                        <span style="color: var(--primary-color);">·</span> <strong>推动Agent架构策略优化</strong>：识别Decision Agent功能过载问题，将领域相关Query下沉至Domain Agent处理，通过策略调整完成能力解耦，降低分流复杂度并提升系统可扩展性。
+                                    </p>
+                                    <p style="margin-bottom: 0; margin-top: 0;">
+                                        <span style="color: var(--primary-color);">·</span> <strong>优化提示词</strong>：梳理飞书多维表格结构化知识并注入提示词；推动在提示词中引入当前环境上下文信息，提升理解能力；维护海内外10+提示词版本；设计跨提示词与SOTA模型对比实验，基于实验结果中的Badcase定向调整优化策略。
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
                     </ul>
                 </div>
 
-                <div class="experience-item">
-                    <h3>曙光天玑数据科技 | 舆情智能体事业部 | AI产品经理</h3>
-                    <p class="company">2025.05 – 2025.08</p>
-                    <ul>
-                        <li><strong>魔方舆情报告智能体（SMB端）：</strong>负责从0到1全流程设计与跟进，1个月推动MVP产品上线；设计交互式舆情报告生成流程；基于竞品分析整合30+数据字段</li>
-                        <li><strong>智报星舆情监测智能体（B/G端）：</strong>负责图搜优化和人物舆情报告功能；设计高相似度图片检索与二次搜索策略；设计人物舆情报告功能框架</li>
+                <div class="experience-item" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.75rem;">
+                        <h3 style="flex: 1;">曙光天玑 | 舆情智能体事业部 | AI 产品经理</h3>
+                        <p class="time">2025.05 – 2025.08</p>
+                    </div>
+                    <ul style="margin: 0; padding: 0;">
+                        <li style="position: relative; padding-left: 1.5rem; margin-bottom: 1rem;">
+                            <span style="color: var(--primary-color); position: absolute; left: 0;">▶</span>
+                            <strong>SMB端 魔方舆情报告智能体 项目</strong><br>
+                            <div style="margin-left: 1rem; margin-top: 0.5rem;">
+                                <p style="margin-bottom: 0.75rem; margin-top: 0;">
+                                    <span style="color: var(--primary-color);">▸</span> <strong>背景&目标</strong>：面向SMB用户打造轻量化舆情SaaS产品，整合舆情问答与自动出报能力，重构原有复杂系统以提升易用性与分析效率。
+                                </p>
+                                <p style="margin-bottom: 0.75rem; margin-top: 0;">
+                                    <span style="color: var(--primary-color);">▸</span> <strong>职责&成果</strong>：负责魔方智能体从0到1全流程的设计与跟进，期间不断进行测试优化，1个月推动MVP产品上线。
+                                </p>
+                                <div style="margin-top: 0.5rem;">
+                                    <p style="margin-bottom: 0; margin-top: 0;">
+                                        <span style="color: var(--primary-color);">·</span> <strong>具体任务</strong>：设计交互式舆情报告生成流程，支持关键词优化、噪音过滤与任务调整，提升分析可控性；基于竞品分析整合30+数据字段，设计多源数据导入与分析模块；通过结构化 Prompt 与关键词逻辑优化检索策略，提升意图识别与信息召回准确率。
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li style="position: relative; padding-left: 1.5rem; margin-bottom: 0.75rem;">
+                            <span style="color: var(--primary-color); position: absolute; left: 0;">▶</span>
+                            <strong>B/G端 智报星舆情监测智能体 项目</strong><br>
+                            <div style="margin-left: 1rem; margin-top: 0.5rem;">
+                                <p style="margin-bottom: 0.75rem; margin-top: 0;">
+                                    <span style="color: var(--primary-color);">▸</span> <strong>背景&目标</strong>：重构传统舆情监测系统，将核心功能模块（舆情问答/舆情推荐/人物舆情）拆分为独立Agent。
+                                </p>
+                                <p style="margin-bottom: 0.75rem; margin-top: 0;">
+                                    <span style="color: var(--primary-color);">▸</span> <strong>职责&成果</strong>：负责舆情问答智能体的图搜优化和人物舆情智能体的人物报告功能。
+                                </p>
+                                <div style="margin-top: 0.5rem;">
+                                    <p style="margin-bottom: 0; margin-top: 0;">
+                                        <span style="color: var(--primary-color);">·</span> <strong>具体任务</strong>：设计高相似度图片检索与二次搜索策略，提高信息溯源能力；设计人物舆情报告功能框架，构建多个核心维度。
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </section>
@@ -143,15 +197,15 @@
                     </div>
 
                     <div class="skill-category">
-                        <h3>AI思维</h3>
+                        <h3>AI 思维</h3>
                         <ul style="list-style: none; padding: 0;">
                             <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
                                 <span style="color: var(--primary-color); position: absolute; left: 0;">▹</span>
-                                工作中善于借助AI发散思路
+                                工作中善于借助 AI 发散思路，使用 AI coding 提效
                             </li>
                             <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
                                 <span style="color: var(--primary-color); position: absolute; left: 0;">▹</span>
-                                使用AI coding提效，关注Replit、Claude Code等AI产品
+                                深度体验 OpenClaw、Claude Code 等 AI 产品
                             </li>
                         </ul>
                     </div>
@@ -161,15 +215,15 @@
                         <ul style="list-style: none; padding: 0;">
                             <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
                                 <span style="color: var(--primary-color); position: absolute; left: 0;">▹</span>
-                                Figma、XMind等设计工具
+                                Figma、XMind 等设计工具
                             </li>
                             <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
                                 <span style="color: var(--primary-color); position: absolute; left: 0;">▹</span>
-                                SQL、Python等数据分析工具
+                                SQL、Python 等数据分析工具
                             </li>
                             <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
                                 <span style="color: var(--primary-color); position: absolute; left: 0;">▹</span>
-                                ChatGPT、Midjourney、Cursor等AI工具
+                                ChatGPT、Midjourney、Cursor 等 AI 工具
                             </li>
                         </ul>
                     </div>
@@ -183,74 +237,53 @@
                             </li>
                             <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
                                 <span style="color: var(--primary-color); position: absolute; left: 0;">▹</span>
-                                研究生课程已全部修读完成，每周可实习5天
+                                热爱 AI 产品经理工作，愿意长期从事该岗位
                             </li>
                             <li style="margin-bottom: 0.75rem; padding-left: 1.5rem; position: relative;">
                                 <span style="color: var(--primary-color); position: absolute; left: 0;">▹</span>
-                                热爱产品经理工作，愿意长期从事该岗位
+                                研究生课程已全部修读完成，每周可实习 5 天
                             </li>
                         </ul>
                     </div>
                 </div>
             </section>
 
-            <!-- GitHub Projects Section (Collapsible) -->
+            <!-- GitHub Section -->
             <section class="resume-section github-section">
-                <h2 class="github-toggle" id="github-toggle">
-                    <i class="fas fa-code"></i> GitHub 项目
-                    <i class="fas fa-chevron-down toggle-icon"></i>
-                </h2>
-                <div class="github-content" id="github-content">
-                    <div class="github-profile">
-                        <div class="profile-info">
-                            <img src="images/profile.JPG" alt="LIU Xinyu" class="profile-pic">
-                            <div class="profile-details">
-                                <div class="profile-text">
-                                    <h3><a href="https://github.com/Halo-Welt" target="_blank">Halo-Welt</a></h3>
-                                    <p class="profile-bio">AI Product Manager | Design & Tech</p>
+                <h2><i class="fas fa-code"></i> GitHub</h2>
+
+                <div class="github-profile">
+                    <div class="profile-info">
+                        <img src="images/profile.JPG" alt="LIU Xinyu" class="profile-pic">
+                        <div class="profile-details">
+                            <div class="profile-text">
+                                <h3><a href="https://github.com/Halo-Welt" target="_blank">Halo-Welt</a></h3>
+                                <p class="profile-bio" id="profile-bio">AI Product Manager | Design & Tech</p>
+                            </div>
+                            <div class="profile-stats">
+                                <div class="stat">
+                                    <i class="fas fa-book"></i>
+                                    <span class="stat-number" id="repo-count">-</span>
+                                    <span class="stat-label">Repos</span>
                                 </div>
-                                <div class="profile-stats">
-                                    <div class="stat">
-                                        <i class="fas fa-book"></i>
-                                        <span class="stat-number">3</span>
-                                        <span class="stat-label">Repos</span>
-                                    </div>
-                                    <div class="stat">
-                                        <i class="fas fa-users"></i>
-                                        <span class="stat-number">4</span>
-                                        <span class="stat-label">Followers</span>
-                                    </div>
+                                <div class="stat">
+                                    <i class="fas fa-users"></i>
+                                    <span class="stat-number" id="follower-count">-</span>
+                                    <span class="stat-label">Followers</span>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-star"></i>
+                                    <span class="stat-number" id="star-count">-</span>
+                                    <span class="stat-label">Stars</span>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="repos-grid">
-                        <div class="repo-card">
-                            <h3><a href="https://github.com/Halo-Welt/meituan_test" target="_blank">meituan_test</a></h3>
-                            <p>美团测试相关项目</p>
-                            <div class="repo-stats">
-                                <span><i class="fas fa-star"></i> 0</span>
-                                <span><i class="fas fa-code-branch"></i> 0</span>
-                            </div>
-                            <div class="repo-tags">
-                                <span>HTML</span>
-                            </div>
-                        </div>
-
-                        <div class="repo-card">
-                            <h3><a href="https://github.com/Halo-Welt/Personal_Website4myself" target="_blank">Personal_Website4myself</a></h3>
-                            <p>Personal Website - Just for me.</p>
-                            <div class="repo-stats">
-                                <span><i class="fas fa-star"></i> 0</span>
-                                <span><i class="fas fa-code-branch"></i> 0</span>
-                            </div>
-                            <div class="repo-tags">
-                                <span>HTML</span>
-                                <span>CSS</span>
-                                <span>JavaScript</span>
-                            </div>
-                        </div>
+                <div class="repos-carousel" id="repos-carousel">
+                    <div class="carousel-track" id="carousel-track">
+                        <!-- Repos will be loaded dynamically from GitHub API -->
                     </div>
                 </div>
             </section>
@@ -263,27 +296,112 @@
     <script src="js/components/footer.js"></script>
 
     <script>
-        // GitHub section toggle
-        document.addEventListener('DOMContentLoaded', () => {
-            const githubToggle = document.getElementById('github-toggle');
-            const githubContent = document.getElementById('github-content');
-            const toggleIcon = githubToggle?.querySelector('.toggle-icon');
+        // GitHub API Integration
+        // 注意: 不需要Token!GitHub API对未认证请求每小时60次,足够展示公开信息
+        const GITHUB_USERNAME = 'Halo-Welt';
+        const GITHUB_API_URL = `https://api.github.com/users/${GITHUB_USERNAME}`;
+        const REPOS_API_URL = `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`;
 
-            if (githubToggle && githubContent) {
-                // Initially hide the content
-                githubContent.style.display = 'none';
-                toggleIcon.style.transform = 'rotate(-90deg)';
+        let repos = [];
 
-                githubToggle.addEventListener('click', () => {
-                    if (githubContent.style.display === 'none') {
-                        githubContent.style.display = 'block';
-                        toggleIcon.style.transform = 'rotate(0deg)';
-                    } else {
-                        githubContent.style.display = 'none';
-                        toggleIcon.style.transform = 'rotate(-90deg)';
-                    }
-                });
+        // Fetch GitHub profile and repos
+        async function fetchGitHubData() {
+            try {
+                console.log('Fetching GitHub data...');
+
+                // Fetch profile
+                const profileResponse = await fetch(GITHUB_API_URL);
+                console.log('Profile response status:', profileResponse.status);
+
+                if (profileResponse.ok) {
+                    const profile = await profileResponse.json();
+                    console.log('Profile data:', profile);
+                    document.getElementById('profile-bio').textContent = profile.bio || 'AI Product Manager | Design & Tech';
+                    document.getElementById('repo-count').textContent = profile.public_repos || '-';
+                    document.getElementById('follower-count').textContent = profile.followers || '-';
+                } else if (profileResponse.status === 403) {
+                    const errorData = await profileResponse.json();
+                    console.error('GitHub API rate limit exceeded:', errorData);
+                    showFallbackContent();
+                } else {
+                    console.error('Profile fetch failed:', profileResponse.status, profileResponse.statusText);
+                    showFallbackContent();
+                }
+
+                // Fetch repos
+                const reposResponse = await fetch(REPOS_API_URL);
+                console.log('Repos response status:', reposResponse.status);
+
+                if (reposResponse.ok) {
+                    repos = await reposResponse.json();
+                    console.log('Repos fetched:', repos.length);
+                    renderRepos();
+                    calculateTotalStars();
+                } else if (reposResponse.status === 403) {
+                    const errorData = await reposResponse.json();
+                    console.error('GitHub API rate limit exceeded:', errorData);
+                    showFallbackContent();
+                } else {
+                    console.error('Repos fetch failed:', reposResponse.status, reposResponse.statusText);
+                    showFallbackContent();
+                }
+            } catch (error) {
+                console.error('Error fetching GitHub data:', error);
+                showFallbackContent();
             }
+        }
+
+        // 显示备用内容
+        function showFallbackContent() {
+            const track = document.getElementById('carousel-track');
+            track.innerHTML = `
+                <div class="repo-card" style="flex: 0 0 350px; max-width: 350px;">
+                    <h3><a href="https://github.com/Halo-Welt" target="_blank">GitHub Profile</a></h3>
+                    <p>API请求受限，请稍后刷新页面重试</p>
+                    <div class="repo-stats">
+                        <span><i class="fas fa-exclamation-triangle"></i> Rate Limit</span>
+                    </div>
+                </div>
+            `;
+            document.getElementById('star-count').textContent = '-';
+        }
+
+        // Calculate total stars across all repos
+        function calculateTotalStars() {
+            const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+            document.getElementById('star-count').textContent = totalStars;
+        }
+
+        // Render repos in carousel
+        function renderRepos() {
+            const track = document.getElementById('carousel-track');
+            track.innerHTML = '';
+
+            repos.forEach(repo => {
+                const repoCard = document.createElement('div');
+                repoCard.className = 'repo-card';
+
+                const languages = repo.language ? `<span>${repo.language}</span>` : '';
+
+                repoCard.innerHTML = `
+                    <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
+                    <p>${repo.description || 'No description available'}</p>
+                    <div class="repo-stats">
+                        <span><i class="fas fa-star"></i> ${repo.stargazers_count}</span>
+                        <span><i class="fas fa-code-branch"></i> ${repo.forks_count}</span>
+                    </div>
+                    <div class="repo-tags">
+                        ${languages}
+                    </div>
+                `;
+
+                track.appendChild(repoCard);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchGitHubData();
         });
     </script>
 </body>

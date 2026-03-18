@@ -1,4 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" fill="#121212"/>
-  <text x="16" y="22" font-family="Arial" font-size="18" font-weight="bold" fill="#39FF14" text-anchor="middle">D</text>
+  <rect width="32" height="32" fill="#faf9f5"/>
+  <g transform="translate(16,16)">
+    <path d="M -8 -2 C -10.5 -2 -12.5 0 -12.5 2.5 C -12.5 5 -10.5 7 -8 7 C -6.5 7 -5 6.5 -4 5.5 L -2 7 C -3 9 -5.5 10 -8 10 C -12 10 -15 7 -15 3 C -15 -1 -12 -4 -8 -4 C -5.5 -4 -3 -2.5 -1.5 -0.5 L 0.5 -2 C -1.5 -4.5 -4.5 -6 -8 -6 Z M 8 -2 C 10.5 -2 12.5 0 12.5 2.5 C 12.5 5 10.5 7 8 7 C 6.5 7 5 6.5 4 5.5 L 2 7 C 3 9 5.5 10 8 10 C 12 10 15 7 15 3 C 15 -1 12 -4 8 -4 C 5.5 -4 3 -2.5 1.5 -0.5 L -0.5 -2 C 1.5 -4.5 4.5 -6 8 -6 Z"
+          fill="none" stroke="#d97757" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="-10" cy="0" r="2.5" fill="#d97757"/>
+    <circle cx="10" cy="0" r="2.5" fill="#d97757"/>
+  </g>
 </svg>

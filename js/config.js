@@ -22,8 +22,8 @@ const CONFIG = {
     // API endpoints - use relative paths for production
     API_ENDPOINTS: {
         CHAT: '/api/chat',
-        VISITOR: '/api/visitor',
-        MESSAGE: '/api/message'
+        GUESTBOOK: '/api/guestbook',
+        GUESTBOOK_ANALYZE: '/api/guestbook/analyze'
     },
 
     // Build full API URL helper
@@ -33,20 +33,6 @@ const CONFIG = {
             return this.API_URL + this.API_ENDPOINTS.CHAT;
         }
         return this.API_ENDPOINTS.CHAT;
-    },
-
-    getVisitorUrl: function() {
-        if (this.API_URL) {
-            return this.API_URL + this.API_ENDPOINTS.VISITOR;
-        }
-        return this.API_ENDPOINTS.VISITOR;
-    },
-
-    getMessageUrl: function() {
-        if (this.API_URL) {
-            return this.API_URL + this.API_ENDPOINTS.MESSAGE;
-        }
-        return this.API_ENDPOINTS.MESSAGE;
     }
 };
 

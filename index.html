@@ -53,12 +53,6 @@
         <section class="hero-section">
             <div class="hero-container">
                 <div class="hero-text">
-                    <p class="hero-greeting">
-                        <span class="bracket">[</span>
-                        <span class="greeting-text">SYSTEM.ONLINE</span>
-                        <span class="bracket">]</span>
-                    </p>
-
                     <h1 class="hero-title">
                         <span class="title-prefix">Hello, I'm</span>
                         <div class="name-display">
@@ -105,11 +99,8 @@
                 </div>
             </div>
 
-            <!-- Scroll Indicator -->
-            <div class="scroll-indicator">
-                <div class="scroll-line"></div>
-                <span class="scroll-text">SCROLL</span>
-            </div>
+            <!-- Interactive Scroll Indicator (invisible but clickable for scroll hint) -->
+            <div class="scroll-indicator" onclick="window.scrollTo({top: window.innerHeight, behavior: 'smooth'})">
         </section>
 
         <!-- About Preview Section -->
@@ -117,26 +108,62 @@
             <div class="section-container">
                 <div class="section-header">
                     <span class="section-number">01</span>
-                    <h2 class="section-title">About</h2>
+                    <h2 class="section-title">About Me</h2>
                 </div>
                 <div class="about-content">
                     <p class="about-text">
-                        I'm a <span class="accent">Desigineer</span> — someone who exists at the intersection of design and engineering.
-                        Currently pursuing my Master's in Design at Central South University, I bring a unique perspective
-                        to AI product development.
+                        I'm an <span class="accent">AI Product Manager</span> and a <span class="accent">listener of life</span>.
                     </p>
                     <div class="about-stats">
                         <div class="stat-item">
-                            <span class="stat-number" data-count="5">0</span>
+                            <span class="stat-number" data-count="25">0</span>
                             <span class="stat-label">Years Experience</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number" data-count="20">0</span>
+                            <span class="stat-number" data-count="2">0</span>
                             <span class="stat-label">Projects</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number" data-count="3">0</span>
+                            <span class="stat-number" data-count="2">0</span>
                             <span class="stat-label">Internships</span>
+                        </div>
+                    </div>
+
+                    <!-- Guestbook Section -->
+                    <div class="guestbook-section">
+                        <div class="guestbook-header">
+                            <h3><i class="fas fa-comments"></i> Leave a Message</h3>
+                        </div>
+
+                        <!-- Message Form -->
+                        <div class="guestbook-form">
+                            <input type="text" id="guestbook-name" placeholder="Your ID / Name" maxlength="50" />
+                            <textarea id="guestbook-message" placeholder="Your message to me..." maxlength="500"></textarea>
+                            <button id="guestbook-submit" class="guestbook-btn">
+                                <i class="fas fa-paper-plane"></i> Send
+                            </button>
+                        </div>
+
+                        <!-- Danmaku Display Area with Border -->
+                        <div class="danmaku-wrapper">
+                            <div class="danmaku-header">
+                                <span><i class="fas fa-broadcast-tower"></i> Live Messages</span>
+                            </div>
+                            <div class="danmaku-container" id="danmaku-container">
+                                <div class="danmaku-placeholder">Leave a message to see it here!</div>
+                            </div>
+                        </div>
+
+                        <!-- Auto Analysis Section -->
+                        <div class="guestbook-analysis">
+                            <div class="analysis-header">
+                                <h4><i class="fas fa-brain"></i> Message Insights</h4>
+                            </div>
+                            <div class="analysis-content" id="analysis-content">
+                                <div class="analysis-loading">
+                                    <i class="fas fa-spinner fa-spin"></i> Analyzing messages...
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -150,40 +177,9 @@
                     <span class="section-number">02</span>
                     <h2 class="section-title">Featured Work</h2>
                 </div>
-                <div class="work-grid">
-                    <a href="resume.html" class="work-card">
-                        <div class="work-card-bg"></div>
-                        <div class="work-card-content">
-                            <span class="work-category">AI Product</span>
-                            <h3 class="work-title">Decision Agent</h3>
-                            <p class="work-desc">Enhanced evaluation scores from 72 to 96</p>
-                        </div>
-                        <div class="work-card-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                    </a>
-                    <a href="resume.html" class="work-card">
-                        <div class="work-card-bg"></div>
-                        <div class="work-card-content">
-                            <span class="work-category">Intelligent System</span>
-                            <h3 class="work-title">Sentiment Analysis</h3>
-                            <p class="work-desc">Launched MVP in 1 month</p>
-                        </div>
-                        <div class="work-card-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                    </a>
-                    <a href="cool.html" class="work-card">
-                        <div class="work-card-bg"></div>
-                        <div class="work-card-content">
-                            <span class="work-category">Creative Code</span>
-                            <h3 class="work-title">Interactive Experiments</h3>
-                            <p class="work-desc">Particle systems & visual effects</p>
-                        </div>
-                        <div class="work-card-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                    </a>
+                <div class="work-placeholder">
+                    <i class="fas fa-hard-hat"></i>
+                    <p>Coming Soon</p>
                 </div>
             </div>
         </section>
@@ -193,15 +189,10 @@
             <div class="section-container">
                 <div class="cta-content">
                     <h2 class="cta-title">Let's create something <span class="glitch-word" id="glitch-word" data-word="extraordinary">extraordinary</span></h2>
-                    <p class="cta-subtitle">Open for AI Product Management opportunities</p>
                     <div class="cta-buttons">
                         <a href="chat.html" class="cta-btn primary">
                             <span>Chat with AI Me</span>
                             <i class="fas fa-robot"></i>
-                        </a>
-                        <a href="resume.html" class="cta-btn secondary">
-                            <span>View Resume</span>
-                            <i class="fas fa-file-alt"></i>
                         </a>
                     </div>
                 </div>
@@ -214,7 +205,6 @@
                 <div class="transition-icon">
                     <i class="fas fa-infinity"></i>
                 </div>
-                <p class="transition-text">Design • Engineering • Innovation</p>
             </div>
         </div>
     </main>

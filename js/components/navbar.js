@@ -4,7 +4,7 @@
  */
 
 const NAVBAR_CONFIG = {
-    logo: 'DESIGINEER',
+    logo: '<i class="fas fa-infinity"></i>',
     pages: [
         { name: 'Home', href: 'index.html' },
         { name: 'Resume', href: 'resume.html' },

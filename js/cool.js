@@ -613,6 +613,84 @@ class ParticleLifeExperiment {
     }
 }
 
+// Wave Interference Experiment
+class WaveInterferenceExperiment {
+    constructor() {
+        this.canvas = document.getElementById('waves-canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.waveCount = 4;
+        this.frequency = 0.03;
+        this.time = 0;
+        this.isRunning = false;
+        this.resize();
+        this.bindEvents();
+    }
+
+    resize() {
+        const rect = this.canvas.parentElement.getBoundingClientRect();
+        this.canvas.width = rect.width;
+        this.canvas.height = rect.height;
+    }
+
+    bindEvents() {
+        window.addEventListener('resize', () => this.resize());
+        const countInput = document.getElementById('wave-count');
+        const freqInput = document.getElementById('wave-freq');
+        if (countInput) {
+            countInput.addEventListener('input', (e) => { this.waveCount = parseInt(e.target.value); });
+        }
+        if (freqInput) {
+            freqInput.addEventListener('input', (e) => { this.frequency = parseFloat(e.target.value); });
+        }
+        this.canvas.addEventListener('click', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            this.clickWave = {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top,
+                time: this.time
+            };
+        });
+    }
+
+    start() { this.isRunning = true; this.animate(); }
+    stop() { this.isRunning = false; }
+
+    animate() {
+        if (!this.isRunning) return;
+        this.ctx.fillStyle = 'rgba(250, 249, 245, 0.1)';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.time += 0.05;
+
+        const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+        const data = imageData.data;
+
+        for (let x = 0; x < this.canvas.width; x += 2) {
+            for (let y = 0; y < this.canvas.height; y += 2) {
+                let amplitude = 0;
+                for (let i = 0; i < this.waveCount; i++) {
+                    const cx = this.canvas.width / 2 + Math.cos(i * Math.PI * 2 / this.waveCount) * 50;
+                    const cy = this.canvas.height / 2 + Math.sin(i * Math.PI * 2 / this.waveCount) * 50;
+                    const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+                    amplitude += Math.sin(dist * this.frequency - this.time);
+                }
+                if (this.clickWave && this.time - this.clickWave.time < 3) {
+                    const dist = Math.sqrt((x - this.clickWave.x) ** 2 + (y - this.clickWave.y) ** 2);
+                    amplitude += Math.sin(dist * this.frequency - (this.time - this.clickWave.time) * 5) * (1 - (this.time - this.clickWave.time) / 3);
+                }
+
+                const intensity = Math.abs(amplitude) / this.waveCount;
+                const idx = (y * this.canvas.width + x) * 4;
+                data[idx] = 217 + intensity * 30;
+                data[idx + 1] = 119 + intensity * 50;
+                data[idx + 2] = 87 + intensity * 80;
+                data[idx + 3] = 255;
+            }
+        }
+        this.ctx.putImageData(imageData, 0, 0);
+        requestAnimationFrame(() => this.animate());
+    }
+}
+
 // Fullscreen Manager
 class FullscreenManager {
     constructor() {
@@ -669,12 +747,16 @@ class FullscreenManager {
                 this.parameters.angle = document.getElementById('fractal-angle')?.value;
                 break;
             case 'matrix':
-                this.parameters.fontSize = document.getElementById('matrix-font')?.value;
+                this.parameters.density = document.getElementById('matrix-density')?.value;
                 this.parameters.speed = document.getElementById('matrix-speed')?.value;
                 break;
             case 'life':
-                this.parameters.particleCount = document.getElementById('life-particles')?.value;
+                this.parameters.count = document.getElementById('life-count')?.value;
                 this.parameters.interactionRadius = document.getElementById('life-radius')?.value;
+                break;
+            case 'waves':
+                this.parameters.waveCount = document.getElementById('wave-count')?.value;
+                this.parameters.frequency = document.getElementById('wave-freq')?.value;
                 break;
         }
     }
@@ -695,7 +777,30 @@ class FullscreenManager {
                 if (nodeInput && this.parameters.nodeCount) nodeInput.value = this.parameters.nodeCount;
                 if (rangeInput && this.parameters.connectionRange) rangeInput.value = this.parameters.connectionRange;
                 break;
-            // Add other cases as needed
+            case 'fractal':
+                const depthInput = document.getElementById('fractal-depth');
+                const angleInput = document.getElementById('fractal-angle');
+                if (depthInput && this.parameters.depth) depthInput.value = this.parameters.depth;
+                if (angleInput && this.parameters.angle) angleInput.value = this.parameters.angle;
+                break;
+            case 'matrix':
+                const densityInput = document.getElementById('matrix-density');
+                const speedInput = document.getElementById('matrix-speed');
+                if (densityInput && this.parameters.density) densityInput.value = this.parameters.density;
+                if (speedInput && this.parameters.speed) speedInput.value = this.parameters.speed;
+                break;
+            case 'life':
+                const countInput = document.getElementById('life-count');
+                const radiusInput = document.getElementById('life-radius');
+                if (countInput && this.parameters.count) countInput.value = this.parameters.count;
+                if (radiusInput && this.parameters.interactionRadius) radiusInput.value = this.parameters.interactionRadius;
+                break;
+            case 'waves':
+                const waveCountInput = document.getElementById('wave-count');
+                const freqInput = document.getElementById('wave-freq');
+                if (waveCountInput && this.parameters.waveCount) waveCountInput.value = this.parameters.waveCount;
+                if (freqInput && this.parameters.frequency) freqInput.value = this.parameters.frequency;
+                break;
         }
     }
 
@@ -738,8 +843,8 @@ class FullscreenManager {
             experiment.ctx = newCanvas.getContext('2d');
             experiment.resize();
 
-            // Rebind events to new controls
-            this.rebindControls(experimentName, experiment);
+            // Rebind events to new controls - pass fullscreenControls container
+            this.rebindControls(experimentName, experiment, fullscreenControls);
         }
 
         // Bind exit button
@@ -754,11 +859,14 @@ class FullscreenManager {
         });
     }
 
-    rebindControls(experimentName, experiment) {
+    rebindControls(experimentName, experiment, controlsContainer) {
+        // Helper function to find element within controls container
+        const findInput = (id) => controlsContainer?.querySelector(`#${id}`);
+
         switch(experimentName) {
             case 'flowField':
-                const noiseInput = document.getElementById('flow-noise');
-                const particleInput = document.getElementById('flow-particles');
+                const noiseInput = findInput('flow-noise');
+                const particleInput = findInput('flow-particles');
                 if (noiseInput) {
                     noiseInput.addEventListener('input', (e) => {
                         experiment.noiseScale = parseFloat(e.target.value);
@@ -772,8 +880,8 @@ class FullscreenManager {
                 }
                 break;
             case 'neural':
-                const nodeInput = document.getElementById('neural-nodes');
-                const rangeInput = document.getElementById('neural-range');
+                const nodeInput = findInput('neural-nodes');
+                const rangeInput = findInput('neural-range');
                 if (nodeInput) {
                     nodeInput.addEventListener('input', (e) => {
                         experiment.nodeCount = parseInt(e.target.value);
@@ -787,7 +895,63 @@ class FullscreenManager {
                     });
                 }
                 break;
-            // Add other cases as needed
+            case 'fractal':
+                const depthInput = findInput('fractal-depth');
+                const angleInput = findInput('fractal-angle');
+                if (depthInput) {
+                    depthInput.addEventListener('input', (e) => {
+                        experiment.maxDepth = parseInt(e.target.value);
+                    });
+                }
+                if (angleInput) {
+                    angleInput.addEventListener('input', (e) => {
+                        experiment.angleSpread = parseInt(e.target.value);
+                    });
+                }
+                break;
+            case 'matrix':
+                const densityInput = findInput('matrix-density');
+                const speedInput = findInput('matrix-speed');
+                if (densityInput) {
+                    densityInput.addEventListener('input', (e) => {
+                        experiment.density = parseInt(e.target.value);
+                    });
+                }
+                if (speedInput) {
+                    speedInput.addEventListener('input', (e) => {
+                        experiment.speed = parseInt(e.target.value);
+                    });
+                }
+                break;
+            case 'life':
+                const countInput = findInput('life-count');
+                const radiusInput = findInput('life-radius');
+                if (countInput) {
+                    countInput.addEventListener('input', (e) => {
+                        experiment.count = parseInt(e.target.value);
+                        experiment.initParticles();
+                    });
+                }
+                if (radiusInput) {
+                    radiusInput.addEventListener('input', (e) => {
+                        experiment.interactionRadius = parseInt(e.target.value);
+                    });
+                }
+                break;
+            case 'waves':
+                const waveCountInput = findInput('wave-count');
+                const freqInput = findInput('wave-freq');
+                if (waveCountInput) {
+                    waveCountInput.addEventListener('input', (e) => {
+                        experiment.waveCount = parseInt(e.target.value);
+                    });
+                }
+                if (freqInput) {
+                    freqInput.addEventListener('input', (e) => {
+                        experiment.frequency = parseFloat(e.target.value);
+                    });
+                }
+                break;
         }
     }
 }
@@ -796,11 +960,28 @@ const fullscreenManager = new FullscreenManager();
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
-    manager.register('flowField', new FlowFieldExperiment());
-    manager.register('neural', new NeuralNetworkExperiment());
-    manager.register('fractal', new FractalTreeExperiment());
-    manager.register('matrix', new MatrixRainExperiment());
-    manager.register('life', new ParticleLifeExperiment());
+    // Register all experiments
+    const flowExp = new FlowFieldExperiment();
+    const neuralExp = new NeuralNetworkExperiment();
+    const fractalExp = new FractalTreeExperiment();
+    const matrixExp = new MatrixRainExperiment();
+    const lifeExp = new ParticleLifeExperiment();
+    const wavesExp = new WaveInterferenceExperiment();
+
+    manager.register('flowField', flowExp);
+    manager.register('neural', neuralExp);
+    manager.register('fractal', fractalExp);
+    manager.register('matrix', matrixExp);
+    manager.register('life', lifeExp);
+    manager.register('waves', wavesExp);
+
+    // Start all experiments for thumbnail preview
+    flowExp.start();
+    neuralExp.start();
+    fractalExp.start();
+    matrixExp.start();
+    lifeExp.start();
+    wavesExp.start();
 
     const cards = document.querySelectorAll('.experiment-card');
     cards.forEach(card => {
@@ -821,9 +1002,10 @@ document.addEventListener('DOMContentLoaded', () => {
         card.addEventListener('click', () => {
             cards.forEach(c => c.classList.remove('active'));
             card.classList.add('active');
-            manager.activate(card.dataset.experiment);
+            // Keep all experiments running, just update visual state
         });
     });
 
-    manager.activate('flowField');
+    // Mark flow field as active initially
+    document.querySelector('[data-experiment="flowField"]').classList.add('active');
 });

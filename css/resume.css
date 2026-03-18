@@ -95,14 +95,26 @@
 
 /* Education */
 .education-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
     margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: transparent;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.education-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 15px rgba(217, 119, 87, 0.15);
+    background: rgba(217, 119, 87, 0.05);
 }
 
 .education-item:last-child {
     margin-bottom: 0;
+}
+
+.education-info {
+    width: 100%;
 }
 
 .education-info h3 {
@@ -114,6 +126,23 @@
 .education-info p {
     color: var(--text-color);
     opacity: 0.8;
+}
+
+/* 时间样式 - 黑色,右对齐 */
+.time {
+    color: #000000;
+    text-align: right;
+    font-weight: 500;
+    white-space: nowrap;
+    margin-left: 1rem;
+}
+
+/* 教育背景标题行 - 让它占满整个宽度 */
+.education-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
 }
 
 .education-year {
@@ -131,6 +160,20 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
+}
+
+.skill-category {
+    padding: 1.5rem;
+    background: transparent;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.skill-category:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 15px rgba(217, 119, 87, 0.15);
+    background: rgba(217, 119, 87, 0.05);
 }
 
 .skill-category h3 {
@@ -183,7 +226,7 @@
 .experience-item, .project-item {
     margin-bottom: 1.5rem;
     padding: 1.5rem;
-    background: var(--background-secondary);
+    background: transparent;
     border-radius: 12px;
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
@@ -191,7 +234,8 @@
 
 .experience-item:hover, .project-item:hover {
     border-color: var(--primary-color);
-    box-shadow: 0 4px 15px rgba(217, 119, 87, 0.1);
+    box-shadow: 0 4px 15px rgba(217, 119, 87, 0.15);
+    background: rgba(217, 119, 87, 0.05);
 }
 
 .experience-item h3, .project-item h3 {
@@ -381,37 +425,57 @@
     .profile-details {
         align-items: center;
     }
+
+    /* Carousel adjustments for mobile */
+    .repo-card {
+        flex: 0 0 280px;
+        max-width: 280px;
+    }
+}
+
+@media (max-width: 480px) {
+    .repo-card {
+        flex: 0 0 260px;
+        max-width: 260px;
+        padding: 1.25rem;
+    }
 }
 
 /* GitHub Section Styles */
-.github-toggle {
-    cursor: pointer;
-    user-select: none;
-    position: relative;
+
+/* GitHub Carousel - Horizontal Scroll */
+.repos-carousel {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) var(--background-secondary);
+    margin: 0 -1rem;
+    padding: 0 1rem;
 }
 
-.github-toggle .toggle-icon {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    transition: transform 0.3s ease;
+.repos-carousel::-webkit-scrollbar {
+    height: 6px;
 }
 
-.github-content {
-    margin-top: 1.5rem;
-    animation: slideDown 0.3s ease;
+.repos-carousel::-webkit-scrollbar-track {
+    background: var(--background-secondary);
+    border-radius: 3px;
 }
 
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.repos-carousel::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 3px;
+}
+
+.repos-carousel::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color);
+}
+
+.carousel-track {
+    display: flex;
+    gap: 1.25rem;
+    padding: 0.5rem 0;
+    width: max-content;
 }
 
 .github-profile {
@@ -419,10 +483,17 @@
     align-items: center;
     gap: 1.5rem;
     padding: 1.5rem;
-    background: var(--background-secondary);
+    background: transparent;
     border-radius: 12px;
     margin-bottom: 1.5rem;
     border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.github-profile:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 15px rgba(217, 119, 87, 0.15);
+    background: rgba(217, 119, 87, 0.05);
 }
 
 .profile-info {
@@ -494,17 +565,22 @@
 }
 
 .repo-card {
-    background: var(--background-secondary);
+    background: transparent;
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 1.5rem;
     transition: all 0.3s ease;
+    flex: 0 0 300px;
+    max-width: 300px;
+    position: relative;
+    z-index: 1;
 }
 
 .repo-card:hover {
     border-color: var(--primary-color);
     box-shadow: 0 4px 15px rgba(217, 119, 87, 0.1);
     transform: translateY(-3px);
+    z-index: 10;
 }
 
 .repo-card h3 a {

@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initFloatingBubbles();
     initScrollAnimations();
     initStatCounters();
+    initGuestbook();
 });
 
 // ============================================
@@ -307,19 +308,28 @@ function initStatCounters() {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                const target = entry.target;
-                const count = parseInt(target.dataset.count) || 0;
-                animateCounter(target, count);
-                observer.unobserve(target);
+                // Animate stats sequentially with staggered delay
+                stats.forEach((stat, index) => {
+                    const count = parseInt(stat.dataset.count) || 0;
+                    setTimeout(() => {
+                        animateCounter(stat, count);
+                    }, index * 200); // 200ms delay between each counter
+                });
+                observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
 
-    stats.forEach(stat => observer.observe(stat));
+    // Observe the stats container
+    const statsContainer = document.querySelector('.about-stats');
+    if (statsContainer) {
+        observer.observe(statsContainer);
+    }
 }
 
 function animateCounter(element, target) {
-    const duration = 2000;
+    // 根据目标值大小动态调整动画持续时间
+    const duration = Math.max(800, Math.min(1500, target * 40));
     const start = 0;
     const startTime = performance.now();
 
@@ -327,11 +337,17 @@ function animateCounter(element, target) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
 
-        // Easing function
-        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-        const current = Math.floor(easeOutQuart * (target - start) + start);
+        // 使用更适合计数的缓动函数
+        const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(easeOutCubic * target);
 
         element.textContent = current;
+
+        // 当数字已经达到目标值时，提前结束动画
+        if (current >= target) {
+            element.textContent = target;
+            return;
+        }
 
         if (progress < 1) {
             requestAnimationFrame(update);
@@ -341,4 +357,187 @@ function animateCounter(element, target) {
     }
 
     requestAnimationFrame(update);
+}
+
+// ============================================
+// Guestbook - 留言功能
+// ============================================
+function initGuestbook() {
+    const nameInput = document.getElementById('guestbook-name');
+    const messageInput = document.getElementById('guestbook-message');
+    const submitBtn = document.getElementById('guestbook-submit');
+    const danmakuContainer = document.getElementById('danmaku-container');
+    const analysisContent = document.getElementById('analysis-content');
+
+    if (!nameInput || !messageInput || !submitBtn) return;
+
+    let messages = [];
+    let danmakuCount = 0;
+
+    // Load messages and analysis on init
+    loadMessages();
+    loadAnalysis();
+
+    // Auto-refresh analysis every 30 seconds
+    setInterval(loadAnalysis, 30000);
+
+    // Submit message
+    submitBtn.addEventListener('click', async () => {
+        const name = nameInput.value.trim();
+        const message = messageInput.value.trim();
+
+        if (!name || !message) {
+            alert('Please enter both name and message');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+        try {
+            const response = await fetch(CONFIG.API_ENDPOINTS.GUESTBOOK, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, message })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to submit message');
+            }
+
+            const newMessage = await response.json();
+            messages.unshift(newMessage);
+
+            // Clear inputs
+            nameInput.value = '';
+            messageInput.value = '';
+
+            // Add danmaku
+            addDanmaku(newMessage);
+
+            // Refresh analysis after a short delay
+            setTimeout(loadAnalysis, 2000);
+        } catch (error) {
+            console.error('Error submitting message:', error);
+            alert('Failed to submit message. Please try again.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+        }
+    });
+
+    // Load messages from server
+    async function loadMessages() {
+        try {
+            const response = await fetch(CONFIG.API_ENDPOINTS.GUESTBOOK);
+            if (response.ok) {
+                messages = await response.json();
+                // Clear placeholder and show messages
+                if (danmakuContainer) {
+                    danmakuContainer.innerHTML = '';
+                }
+                // Display latest 10 messages as danmaku
+                messages.slice(0, 10).reverse().forEach(msg => addDanmaku(msg, false));
+            }
+        } catch (error) {
+            console.error('Error loading messages:', error);
+        }
+    }
+
+    // Load analysis results
+    async function loadAnalysis() {
+        if (!analysisContent) return;
+
+        try {
+            const response = await fetch(CONFIG.API_ENDPOINTS.GUESTBOOK_ANALYZE);
+            if (response.ok) {
+                const analysis = await response.json();
+                displayAnalysis(analysis);
+            }
+        } catch (error) {
+            console.error('Error loading analysis:', error);
+        }
+    }
+
+    // Add danmaku animation
+    function addDanmaku(msg, animate = true) {
+        if (!danmakuContainer) return;
+
+        // Remove placeholder if exists
+        const placeholder = danmakuContainer.querySelector('.danmaku-placeholder');
+        if (placeholder) placeholder.remove();
+
+        danmakuCount++;
+        const danmaku = document.createElement('div');
+        danmaku.className = 'danmaku-item' + (animate ? ' new' : '');
+        danmaku.innerHTML = `<span class="danmaku-name">${escapeHtml(msg.name)}:</span> ${escapeHtml(msg.message)}`;
+
+        if (animate) {
+            danmakuContainer.appendChild(danmaku);
+            setTimeout(() => danmaku.classList.add('animate'), 10);
+            // Remove after animation
+            setTimeout(() => {
+                if (danmaku.parentNode) {
+                    danmaku.remove();
+                }
+            }, 8000);
+        } else {
+            // For initial load, add at the beginning
+            danmakuContainer.insertBefore(danmaku, danmakuContainer.firstChild);
+            danmaku.style.opacity = '1';
+        }
+    }
+
+    // Display analysis results
+    function displayAnalysis(analysis) {
+        if (!analysisContent) return;
+
+        let html = '';
+
+        if (analysis.clusters && analysis.clusters.length > 0) {
+            if (analysis.summary) {
+                html += `<p class="analysis-summary">${escapeHtml(analysis.summary)}</p>`;
+            }
+
+            html += '<div class="cluster-container">';
+            html += '<div class="cluster-bubbles">';
+
+            analysis.clusters.forEach((cluster, index) => {
+                const colors = ['#d97757', '#6a9bcc', '#8bc34a', '#ff9800', '#9c27b0'];
+                const color = colors[index % colors.length];
+                const size = 60 + (cluster.keywords?.length || 1) * 10;
+
+                html += `
+                    <div class="cluster-bubble" style="
+                        --color: ${color};
+                        --size: ${size}px;
+                        --delay: ${index * 0.1}s;
+                    ">
+                        <span class="cluster-name">${escapeHtml(cluster.category)}</span>
+                        <div class="cluster-keywords">
+                            ${(cluster.keywords || []).map(k => `<span class="keyword">${escapeHtml(k)}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div></div>';
+
+            if (analysis.lastUpdate) {
+                const date = new Date(analysis.lastUpdate);
+                html += `<p class="analysis-time">Updated: ${date.toLocaleTimeString()}</p>`;
+            }
+        } else {
+            html = '<p class="analysis-placeholder">No messages to analyze yet. Be the first to leave a message!</p>';
+        }
+
+        analysisContent.innerHTML = html;
+    }
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
 }

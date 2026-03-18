@@ -31,7 +31,6 @@ function generateFooter() {
                 <div class="transition-icon">
                     <i class="fas fa-infinity"></i>
                 </div>
-                <p class="transition-text">Design • Engineering • Innovation</p>
             </div>
         </div>
     `;

@@ -1,5 +1,8 @@
-// Vercel Edge Function for AI Chat using
-// 部署到Vercel时会自动使用环境变量中的
+// Vercel Edge Function for AI Chat using DeepSeek API
+// 部署到Vercel时会自动使用环境变量中的DEEPSEEK_API_KEY
+
+import { readFile } from 'fs/promises';
+import { join } from 'path';
 
 export const config = {
   runtime: 'edge',
@@ -27,7 +30,7 @@ export default async function handler(request) {
   }
 
   try {
-    const { messages } = await request.json();
+    const { messages, mode } = await request.json();
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: 'Messages array required' }), {
@@ -36,8 +39,21 @@ export default async function handler(request) {
       });
     }
 
-    // 使用
-    const apiKey = process.env.? 'sk-8465def446a94835a95996382d3996f9';
+    // 读取对应模式的提示词文件
+    let systemPrompt = '';
+    try {
+      const promptPath = join(process.cwd(), 'prompts', `${mode || 'resume'}.md`);
+      systemPrompt = await readFile(promptPath, 'utf8');
+    } catch (err) {
+      console.error('Error reading prompt file:', err);
+      // 如果读取失败，使用默认提示词
+      systemPrompt = mode === 'consultant' 
+        ? 'You are a design and engineering expert.' 
+        : 'You are an AI assistant representing Liu Xinyu.';
+    }
+
+    // 使用环境变量中的API key
+    const apiKey = process.env.DEEPSEEK_API_KEY || 'sk-8465def446a94835a95996382d3996f9';
 
     if (!apiKey) {
       return new Response(JSON.stringify({ error: 'API key not configured' }), {
@@ -46,18 +62,24 @@ export default async function handler(request) {
       });
     }
 
-    console.log('Calling  API...');
+    console.log('Calling DeepSeek API...');
 
-    // Call  API
-    const response = await fetch('https://api./chat/completions', {
+    // 构建消息数组，添加系统提示词
+    const apiMessages = [
+      { role: 'system', content: systemPrompt },
+      ...messages
+    ];
+
+    // Call DeepSeek API
+    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: '',
-        messages: messages,
+        model: 'deepseek-chat',
+        messages: apiMessages,
         temperature: 0.7,
         max_tokens: 2000,
         stream: false,
@@ -66,7 +88,7 @@ export default async function handler(request) {
 
     if (!response.ok) {
       const error = await response.text();
-      console.error(' API error:', error);
+      console.error('DeepSeek API error:', error);
       return new Response(JSON.stringify({ error: `API error: ${error}` }), {
         status: response.status,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -75,7 +97,7 @@ export default async function handler(request) {
 
     const data = await response.json();
 
-    console.log(' API response received');
+    console.log('DeepSeek API response received');
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

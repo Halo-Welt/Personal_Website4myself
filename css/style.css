@@ -1,5 +1,10 @@
 /* Base styles and variables - Anthropic Theme */
 :root {
+    /* Font Families */
+    --font-display: 'Syncopate', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+    --font-chinese: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Hiragino Sans GB', sans-serif;
+
     /* Anthropic Brand Colors */
     --primary-color: #d97757;
     --primary-hover: #c86641;
@@ -33,7 +38,7 @@ html {
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-mono), var(--font-chinese);
     background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.6;
@@ -218,8 +223,7 @@ body {
 }
 
 .hero-quote {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
+    font-family: var(--font-display), var(--font-chinese);
     font-size: 1.3rem;
     color: var(--text-color);
     opacity: 0.9;
@@ -336,7 +340,7 @@ footer {
 }
 
 .transition-text {
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-mono), var(--font-chinese);
     font-size: 0.875rem;
     color: var(--text-muted);
     letter-spacing: 0.2em;
@@ -478,6 +482,14 @@ footer {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+}
+
+/* Time style */
+.time {
+    margin: 0;
+    text-align: right;
+    min-width: 120px;
+    color: var(--primary-color);
 }
 
 /* Subtle background animation */
