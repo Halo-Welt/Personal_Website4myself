@@ -25,19 +25,24 @@ if (!fs.existsSync(ANALYSIS_FILE)) {
     fs.writeFileSync(ANALYSIS_FILE, JSON.stringify({ clusters: [], lastUpdate: null }, null, 2));
 }
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.static('../frontend'));
-
 // Request logging middleware
 app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
     next();
 });
 
-// Health check endpoint
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.static('../frontend'));
+
+// Handle root path
 app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
     res.json({
         status: 'ok',
         timestamp: new Date().toISOString(),
