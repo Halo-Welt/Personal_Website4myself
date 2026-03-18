@@ -1,9 +1,5 @@
 {
-  "functions": {
-    "api/*.js": {
-      "runtime": "nodejs20.x"
-    }
-  },
+  "buildCommand": "npm install",
   "headers": [
     {
       "source": "/api/(.*)",
