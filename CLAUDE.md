@@ -17,38 +17,39 @@ npm run dev          # Start development server with nodemon auto-restart
 For static file development:
 ```bash
 python -m http.server 8000   # Serve static files
-npx serve .                  # Alternative static server
+npx serve frontend            # Alternative static server
 ```
 
 ## Architecture
 
 ### Pages
-- `index.html` - Home page with hero section, about preview, featured work
-- `resume.html` - Professional resume
-- `chat.html` - AI-powered chat (two modes: Consultant & Resume)
-- `cool.html` - Interactive particle experiments
+- `frontend/index.html` - Home page with hero section, about preview, featured work
+- `frontend/resume.html` - Professional resume
+- `frontend/chat.html` - AI-powered chat (two modes: Consultant & Resume)
+- `frontend/cool.html` - Interactive particle experiments
 
-### API (Vercel Serverless Functions)
-- `api/chat.js` -
+### Backend
+- `backend/server.js` - Express backend server (handles chat API and static files)
 
 ### Key Files
-- `server.js` - Express backend server (also handles Vercel deployment)
-- `js/config.js` - Environment-aware API URL configuration
-- `js/home-new.js` - Home page logic
-- `js/chat.js` - Chat functionality
-- `js/cool.js` - Particle experiments
-- `prompts/consultant.md` - System prompt for consultant mode
-- `prompts/resume.md` - System prompt for resume mode
+- `backend/server.js` - Express backend server (also handles Vercel deployment)
+- `frontend/js/config.js` - Environment-aware API URL configuration
+- `frontend/js/home-new.js` - Home page logic
+- `frontend/js/chat.js` - Chat functionality
+- `frontend/js/cool.js` - Particle experiments
+- `backend/prompts/consultant.md` - System prompt for consultant mode
+- `backend/prompts/resume.md` - System prompt for resume mode
+- `backend/prompts/analysis.md` - System prompt for message analysis
 
 ### Chat Feature
-The chat uses :
-1. **Consultant Mode**: Design and engineering expert (uses `prompts/consultant.md`)
-2. **Resume Mode**: AI assistant with knowledge about LIU Xinyu's background (uses `prompts/resume.md`)
+The chat uses:
+1. **Consultant Mode**: Design and engineering expert (uses `backend/prompts/consultant.md`)
+2. **Resume Mode**: AI assistant with knowledge about LIU Xinyu's background (uses `backend/prompts/resume.md`)
 
 ### Deployment
 - Deploy to Vercel for full functionality (frontend + API)
-- `vercel.json` configures routing: `/api/*` → server.js
-- Environment variable required: ``
+- `vercel.json` configures routing: `/api/*` → backend/server.js
+- Environment variable required: `DEEPSEEK_API_KEY`
 
 ## Environment
 
