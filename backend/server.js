@@ -28,7 +28,7 @@ if (!fs.existsSync(ANALYSIS_FILE)) {
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('.'));
+app.use(express.static('../frontend'));
 
 // Request logging middleware
 app.use((req, res, next) => {
@@ -114,7 +114,7 @@ async function analyzeMessagesAsync() {
             return;
         }
 
-        const apiKey = process.env.;
+        const apiKey = process.env.DEEPSEEK_API_KEY;
         if (!apiKey) {
             console.log('No API key, skipping analysis');
             return;
@@ -123,7 +123,18 @@ async function analyzeMessagesAsync() {
         // 构建分析提示词
         const messagesText = messages.map(m => `- ${m.name}: ${m.message}`).join('\n');
 
-        const prompt = `请分析以下留言，对它们进行聚类。每条留言格式为 "姓名: 内容":
+        // 读取分析提示词文件
+        let prompt = '';
+        try {
+            const promptPath = path.join(__dirname, 'prompts', 'analysis.md');
+            prompt = fs.readFileSync(promptPath, 'utf8');
+            // 替换占位符
+            prompt = prompt.replace('{{messagesText}}', messagesText);
+            console.log('Successfully read analysis prompt file');
+        } catch (err) {
+            console.error('Error reading analysis prompt file:', err);
+            // 如果读取失败，使用默认提示词
+            prompt = `请分析以下留言，对它们进行聚类。每条留言格式为 "姓名: 内容":
 
 ${messagesText}
 
@@ -132,10 +143,11 @@ ${messagesText}
 2. summary: 一句话总结这些留言的共同主题
 
 只返回JSON，不要其他内容。`;
+        }
 
         console.log('Calling LLM for message analysis...');
 
-        const response = await fetch('https://api./v1/chat/completions', {
+        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -206,7 +218,7 @@ app.post('/api/guestbook/analyze', async (req, res) => {
             return res.json({ clusters: [], summary: '暂无留言' });
         }
 
-        const apiKey = process.env.;
+        const apiKey = process.env.DEEPSEEK_API_KEY;
         if (!apiKey) {
             return res.status(500).json({ error: 'API key not configured' });
         }
@@ -224,7 +236,7 @@ ${messagesText}
 
 只返回JSON，不要其他内容。`;
 
-        const response = await fetch('https://api./v1/chat/completions', {
+        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
