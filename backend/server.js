@@ -34,7 +34,8 @@ app.use((req, res, next) => {
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('../frontend'));
+// Use absolute path for static files
+app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Handle root path
 app.get('/', (req, res) => {
