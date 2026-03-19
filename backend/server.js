@@ -148,7 +148,7 @@ async function analyzeMessagesAsync() {
         }
 
         // 构建分析提示词
-        const messagesText = messages.map(m => `- ${m.name}: ${m.message}`).join('\n');
+        const messagesText = JSON.stringify(messages, null, 2);
 
         // 读取分析提示词文件
         let prompt = '';
@@ -193,7 +193,12 @@ async function analyzeMessagesAsync() {
         // 解析JSON
         let analysis = { clusters: [], summary: '', wordcloud: [] };
         try {
-            analysis = JSON.parse(analysisText);
+            // 移除JSON代码块标记
+            let cleanText = analysisText;
+            if (cleanText.startsWith('```json')) {
+                cleanText = cleanText.replace('```json', '').replace('```', '').trim();
+            }
+            analysis = JSON.parse(cleanText);
             // 确保wordcloud字段存在
             if (!analysis.wordcloud) {
                 // 从聚类中生成词云数据
@@ -209,8 +214,9 @@ async function analyzeMessagesAsync() {
                     }
                 });
             }
-        } catch {
-            console.error('Failed to parse analysis JSON');
+        } catch (error) {
+            console.error('Failed to parse analysis JSON:', error);
+            console.error('Raw analysis text:', analysisText);
             return;
         }
 
