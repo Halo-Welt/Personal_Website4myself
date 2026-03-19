@@ -395,7 +395,9 @@ function initGuestbook() {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
         try {
-            const response = await fetch(CONFIG.API_ENDPOINTS.GUESTBOOK, {
+            // 构建完整的API URL
+            const apiUrl = CONFIG.API_URL ? CONFIG.API_URL + CONFIG.API_ENDPOINTS.GUESTBOOK : CONFIG.API_ENDPOINTS.GUESTBOOK;
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, message })
@@ -429,7 +431,9 @@ function initGuestbook() {
     // Load messages from server
     async function loadMessages() {
         try {
-            const response = await fetch(CONFIG.API_ENDPOINTS.GUESTBOOK);
+            // 构建完整的API URL
+            const apiUrl = CONFIG.API_URL ? CONFIG.API_URL + CONFIG.API_ENDPOINTS.GUESTBOOK : CONFIG.API_ENDPOINTS.GUESTBOOK;
+            const response = await fetch(apiUrl);
             if (response.ok) {
                 messages = await response.json();
                 // Clear placeholder and show messages
@@ -449,7 +453,9 @@ function initGuestbook() {
         if (!analysisContent) return;
 
         try {
-            const response = await fetch(CONFIG.API_ENDPOINTS.GUESTBOOK_ANALYZE);
+            // 构建完整的API URL
+            const apiUrl = CONFIG.API_URL ? CONFIG.API_URL + CONFIG.API_ENDPOINTS.GUESTBOOK_ANALYZE : CONFIG.API_ENDPOINTS.GUESTBOOK_ANALYZE;
+            const response = await fetch(apiUrl);
             if (response.ok) {
                 const analysis = await response.json();
                 displayAnalysis(analysis);
@@ -459,9 +465,37 @@ function initGuestbook() {
         }
     }
 
+    // 弹幕轨道管理
+    let danmakuTracks = [];
+    const TRACK_HEIGHT = 40; // 每条轨道的高度
+    
+    // 初始化轨道
+    function initDanmakuTracks() {
+        if (!danmakuContainer) return;
+        const containerHeight = danmakuContainer.offsetHeight;
+        const trackCount = Math.floor(containerHeight / TRACK_HEIGHT);
+        danmakuTracks = Array(trackCount).fill(false); // false表示轨道空闲
+    }
+
+    // 获取可用轨道
+    function getAvailableTrack() {
+        for (let i = 0; i < danmakuTracks.length; i++) {
+            if (!danmakuTracks[i]) {
+                return i;
+            }
+        }
+        // 如果没有可用轨道，返回随机轨道
+        return Math.floor(Math.random() * danmakuTracks.length);
+    }
+
     // Add danmaku animation
     function addDanmaku(msg, animate = true) {
         if (!danmakuContainer) return;
+
+        // 初始化轨道（如果还没初始化）
+        if (danmakuTracks.length === 0) {
+            initDanmakuTracks();
+        }
 
         // Remove placeholder if exists
         const placeholder = danmakuContainer.querySelector('.danmaku-placeholder');
@@ -472,9 +506,13 @@ function initGuestbook() {
         danmaku.className = 'danmaku-item';
         danmaku.innerHTML = `<span class="danmaku-name">${escapeHtml(msg.name)}:</span> ${escapeHtml(msg.message)}`;
 
-        // Set random vertical position
-        const top = Math.random() * (danmakuContainer.offsetHeight - 40);
+        // 获取可用轨道
+        const trackIndex = getAvailableTrack();
+        const top = trackIndex * TRACK_HEIGHT;
         danmaku.style.top = `${top}px`;
+
+        // 标记轨道为占用
+        danmakuTracks[trackIndex] = true;
 
         // Set random speed (4-10 seconds to cross the screen)
         const duration = 4 + Math.random() * 6;
@@ -489,6 +527,8 @@ function initGuestbook() {
         setTimeout(() => {
             if (danmaku.parentNode) {
                 danmaku.remove();
+                // 标记轨道为空闲
+                danmakuTracks[trackIndex] = false;
                 // Re-add the danmaku to create loop
                 setTimeout(() => addDanmaku(msg, false), 1000);
             }
@@ -504,6 +544,37 @@ function initGuestbook() {
         if (analysis.clusters && analysis.clusters.length > 0) {
             if (analysis.summary) {
                 html += `<p class="analysis-summary">${escapeHtml(analysis.summary)}</p>`;
+            }
+
+            // 词云展示
+            if (analysis.wordcloud && analysis.wordcloud.length > 0) {
+                html += '<div class="wordcloud-container">';
+                html += '<h4>Word Cloud</h4>';
+                html += '<div class="wordcloud">';
+                
+                analysis.wordcloud.forEach((word, index) => {
+                    const colors = ['#d97757', '#6a9bcc', '#8bc34a', '#ff9800', '#9c27b0'];
+                    const color = colors[index % colors.length];
+                    const fontSize = 12 + (word.value / 5);
+                    const rotate = Math.random() * 45 - 22.5; // -22.5 to 22.5 degrees
+                    
+                    html += `
+                        <span class="word" style="
+                            font-size: ${fontSize}px;
+                            color: ${color};
+                            transform: rotate(${rotate}deg);
+                            display: inline-block;
+                            margin: 5px;
+                            padding: 2px 5px;
+                            border-radius: 3px;
+                            background: rgba(255, 255, 255, 0.7);
+                        ">
+                            ${escapeHtml(word.text)}
+                        </span>
+                    `;
+                });
+                
+                html += '</div></div>';
             }
 
             html += '<div class="cluster-container">';

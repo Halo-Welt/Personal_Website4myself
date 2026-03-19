@@ -1,28 +1,50 @@
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Data file paths
-const DATA_DIR = path.join(__dirname, 'data');
-const MESSAGES_FILE = path.join(DATA_DIR, 'messages.json');
-const ANALYSIS_FILE = path.join(DATA_DIR, 'analysis.json');
+// jsonbin配置
+const JSONBIN_API_KEY = process.env.JSONBIN_API_KEY;
+const JSONBIN_BIN_ID = process.env.JSONBIN_BIN_ID;
+const JSONBIN_BASE_URL = 'https://api.jsonbin.io/v3';
 
-// Ensure data directory exists
-if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+// 辅助函数：获取数据
+async function fetchJsonBin(binId) {
+  try {
+    const response = await fetch(`${JSONBIN_BASE_URL}/b/${binId}`, {
+      headers: {
+        'X-Master-Key': JSONBIN_API_KEY
+      }
+    });
+    if (!response.ok) throw new Error('Failed to fetch data');
+    const data = await response.json();
+    return data.record;
+  } catch (error) {
+    console.error('Error fetching from jsonbin:', error);
+    return [];
+  }
 }
 
-// Initialize files if not exists
-if (!fs.existsSync(MESSAGES_FILE)) {
-    fs.writeFileSync(MESSAGES_FILE, JSON.stringify([], null, 2));
-}
-if (!fs.existsSync(ANALYSIS_FILE)) {
-    fs.writeFileSync(ANALYSIS_FILE, JSON.stringify({ clusters: [], lastUpdate: null }, null, 2));
+// 辅助函数：更新数据
+async function updateJsonBin(binId, data) {
+  try {
+    const response = await fetch(`${JSONBIN_BASE_URL}/b/${binId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': JSONBIN_API_KEY
+      },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Failed to update data');
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating jsonbin:', error);
+    throw error;
+  }
 }
 
 // Request logging middleware
@@ -56,9 +78,9 @@ app.get('/health', (req, res) => {
 // ============================================
 
 // 获取所有留言
-app.get('/api/guestbook', (req, res) => {
+app.get('/api/guestbook', async (req, res) => {
     try {
-        const messages = JSON.parse(fs.readFileSync(MESSAGES_FILE, 'utf8'));
+        const messages = await fetchJsonBin(JSONBIN_BIN_ID);
         // 返回最近50条留言，按时间倒序
         res.json(messages.slice(0, 50).reverse());
     } catch (error) {
@@ -80,7 +102,7 @@ app.post('/api/guestbook', async (req, res) => {
     }
 
     try {
-        const messages = JSON.parse(fs.readFileSync(MESSAGES_FILE, 'utf8'));
+        const messages = await fetchJsonBin(JSONBIN_BIN_ID);
 
         const newMessage = {
             id: Date.now().toString(),
@@ -96,7 +118,7 @@ app.post('/api/guestbook', async (req, res) => {
             messages.splice(0, messages.length - 200);
         }
 
-        fs.writeFileSync(MESSAGES_FILE, JSON.stringify(messages, null, 2));
+        await updateJsonBin(JSONBIN_BIN_ID, messages);
 
         console.log('New guestbook message:', newMessage);
 
@@ -113,10 +135,9 @@ app.post('/api/guestbook', async (req, res) => {
 // 异步分析留言
 async function analyzeMessagesAsync() {
     try {
-        const messages = JSON.parse(fs.readFileSync(MESSAGES_FILE, 'utf8'));
+        const messages = await fetchJsonBin(JSONBIN_BIN_ID);
 
         if (messages.length === 0) {
-            fs.writeFileSync(ANALYSIS_FILE, JSON.stringify({ clusters: [], lastUpdate: new Date().toISOString() }, null, 2));
             return;
         }
 
@@ -133,22 +154,16 @@ async function analyzeMessagesAsync() {
         let prompt = '';
         try {
             const promptPath = path.join(__dirname, 'prompts', 'analysis.md');
+            // 使用fs.readFileSync读取文件
+            const fs = require('fs');
             prompt = fs.readFileSync(promptPath, 'utf8');
             // 替换占位符
             prompt = prompt.replace('{{messagesText}}', messagesText);
             console.log('Successfully read analysis prompt file');
         } catch (err) {
             console.error('Error reading analysis prompt file:', err);
-            // 如果读取失败，使用默认提示词
-            prompt = `请分析以下留言，对它们进行聚类。每条留言格式为 "姓名: 内容":
-
-${messagesText}
-
-请返回JSON格式的分析结果，包含:
-1. clusters: 聚类数组，每个聚类包含 category(中文类别名，简洁如"技术咨询"、"合作意向"、"赞美感谢") 和 keywords(2-3个关键词数组)
-2. summary: 一句话总结这些留言的共同主题
-
-只返回JSON，不要其他内容。`;
+            // 如果读取失败，使用空提示词
+            prompt = '';
         }
 
         console.log('Calling LLM for message analysis...');
@@ -162,8 +177,9 @@ ${messagesText}
             body: JSON.stringify({
                 model: 'deepseek-chat',
                 messages: [{ role: 'user', content: prompt }],
-                temperature: 0.5,
-                max_tokens: 1500
+                temperature: 0.2,
+                max_tokens: 1500,
+                stream: false
             })
         });
 
@@ -175,17 +191,30 @@ ${messagesText}
         const analysisText = data.choices[0].message.content;
 
         // 解析JSON
-        let analysis = { clusters: [], summary: '' };
+        let analysis = { clusters: [], summary: '', wordcloud: [] };
         try {
             analysis = JSON.parse(analysisText);
+            // 确保wordcloud字段存在
+            if (!analysis.wordcloud) {
+                // 从聚类中生成词云数据
+                analysis.wordcloud = [];
+                analysis.clusters.forEach(cluster => {
+                    if (cluster.keywords && cluster.keywords.length > 0) {
+                        cluster.keywords.forEach(keyword => {
+                            analysis.wordcloud.push({
+                                text: keyword,
+                                value: Math.floor(Math.random() * 50) + 10 // 随机权重
+                            });
+                        });
+                    }
+                });
+            }
         } catch {
             console.error('Failed to parse analysis JSON');
             return;
         }
 
         analysis.lastUpdate = new Date().toISOString();
-        fs.writeFileSync(ANALYSIS_FILE, JSON.stringify(analysis, null, 2));
-
         console.log('Analysis updated:', analysis);
     } catch (error) {
         console.error('Error analyzing messages:', error);
@@ -195,7 +224,12 @@ ${messagesText}
 // 获取分析结果
 app.get('/api/guestbook/analyze', (req, res) => {
     try {
-        const analysis = JSON.parse(fs.readFileSync(ANALYSIS_FILE, 'utf8'));
+        // 返回默认分析结果
+        const analysis = { 
+            clusters: [], 
+            summary: 'Analysis disabled in cloud mode',
+            lastUpdate: new Date().toISOString() 
+        };
         res.json(analysis);
     } catch (error) {
         console.error('Error reading analysis:', error);
@@ -207,7 +241,12 @@ app.get('/api/guestbook/analyze', (req, res) => {
 app.post('/api/guestbook/analyze', async (req, res) => {
     try {
         await analyzeMessagesAsync();
-        const analysis = JSON.parse(fs.readFileSync(ANALYSIS_FILE, 'utf8'));
+        // 返回默认分析结果
+        const analysis = { 
+            clusters: [], 
+            summary: 'Analysis triggered in cloud mode',
+            lastUpdate: new Date().toISOString() 
+        };
         res.json(analysis);
     } catch (error) {
         console.error('Error triggering analysis:', error);
@@ -239,6 +278,8 @@ app.post('/api/chat', async (req, res) => {
         const mode = req.body.mode || 'resume';
         try {
             const promptPath = path.join(__dirname, 'prompts', `${mode}.md`);
+            // 使用fs.readFileSync读取文件
+            const fs = require('fs');
             systemPrompt = fs.readFileSync(promptPath, 'utf8');
             console.log(`Successfully read prompt file for mode: ${mode}`);
         } catch (err) {
@@ -264,9 +305,9 @@ app.post('/api/chat', async (req, res) => {
         const requestBody = {
             model: "deepseek-chat",
             messages: apiMessages,
-            temperature: 0.7,
+            temperature: 0.2,
             max_tokens: 2000,
-            stream: false
+            stream: true
         };
 
         const response = await fetch(apiUrl, {

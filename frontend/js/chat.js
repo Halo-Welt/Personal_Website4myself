@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resume: {
             description: 'About Liu Xinyu',
             title: 'Resume Mode',
-            welcome: "Hi! I'm Liu Xinyu's AI assistant. Feel free to ask about my education, experience, or skills."
+            welcome: "Hi! I'm Liu Xinyu. Feel free to ask me anything."
         },
         consultant: {
             description: 'Design + Engineering Expert',
