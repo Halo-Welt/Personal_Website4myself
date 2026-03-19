@@ -128,44 +128,6 @@
                             <span class="stat-label">Internships</span>
                         </div>
                     </div>
-
-                    <!-- Guestbook Section -->
-                    <div class="guestbook-section">
-                        <div class="guestbook-header">
-                            <h3><i class="fas fa-comments"></i> Leave a Message</h3>
-                        </div>
-
-                        <!-- Message Form -->
-                        <div class="guestbook-form">
-                            <input type="text" id="guestbook-name" placeholder="Your ID / Name" maxlength="50" />
-                            <textarea id="guestbook-message" placeholder="Your message to me..." maxlength="500"></textarea>
-                            <button id="guestbook-submit" class="guestbook-btn">
-                                <i class="fas fa-paper-plane"></i> Send
-                            </button>
-                        </div>
-
-                        <!-- Danmaku Display Area with Border -->
-                        <div class="danmaku-wrapper">
-                            <div class="danmaku-header">
-                                <span><i class="fas fa-broadcast-tower"></i> Live Messages</span>
-                            </div>
-                            <div class="danmaku-container" id="danmaku-container">
-                                <div class="danmaku-placeholder">Leave a message to see it here!</div>
-                            </div>
-                        </div>
-
-                        <!-- Auto Analysis Section -->
-                        <div class="guestbook-analysis">
-                            <div class="analysis-header">
-                                <h4><i class="fas fa-brain"></i> Message Insights</h4>
-                            </div>
-                            <div class="analysis-content" id="analysis-content">
-                                <div class="analysis-loading">
-                                    <i class="fas fa-spinner fa-spin"></i> Analyzing messages...
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
@@ -184,11 +146,54 @@
             </div>
         </section>
 
+        <!-- Message Section -->
+        <section class="message-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <span class="section-number">03</span>
+                    <h2 class="section-title">Leave a Message</h2>
+                </div>
+                
+                <div class="message-content">
+                    <!-- Live Messages -->
+                    <div class="live-messages">
+                        <div class="message-header">
+                            <h3><i class="fas fa-broadcast-tower"></i> Live Messages</h3>
+                        </div>
+                        <div class="danmaku-container" id="danmaku-container">
+                            <div class="danmaku-placeholder">Leave a message to see it here!</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Message Insights -->
+                    <div class="message-insights">
+                        <div class="message-header">
+                            <h3><i class="fas fa-brain"></i> Message Insights</h3>
+                        </div>
+                        <div class="analysis-content" id="analysis-content">
+                            <div class="analysis-loading">
+                                <i class="fas fa-spinner fa-spin"></i> Analyzing messages...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Message Form -->
+                <div class="message-form">
+                    <input type="text" id="guestbook-name" placeholder="Your Name" maxlength="50" />
+                    <textarea id="guestbook-message" placeholder="Your message to me..." maxlength="500"></textarea>
+                    <button id="guestbook-submit" class="guestbook-btn">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </button>
+                </div>
+            </div>
+        </section>
+
         <!-- Contact CTA Section -->
         <section class="contact-cta">
             <div class="section-container">
                 <div class="cta-content">
-                    <h2 class="cta-title">Let's create something <span class="glitch-word" id="glitch-word" data-word="extraordinary">extraordinary</span></h2>
+                    <h2 class="cta-title">Let's create something <span class="glitch-word" id="glitch-word" data-word="fantastic">fantastic</span></h2>
                     <div class="cta-buttons">
                         <a href="chat.html" class="cta-btn primary">
                             <span>Chat with AI Me</span>
@@ -211,6 +216,7 @@
 
     <footer id="footer" role="contentinfo" style="display: none;"></footer>
 
+    <script src="js/config.js"></script>
     <script src="js/components/navbar.js"></script>
     <script src="js/components/footer.js"></script>
     <script src="js/home-new.js"></script>

@@ -667,7 +667,8 @@
 
     .about-preview,
     .work-preview,
-    .contact-cta {
+    .contact-cta,
+    .message-section {
         padding: 6rem 2rem;
     }
 
@@ -675,6 +676,11 @@
         grid-template-columns: 1fr;
         max-width: 600px;
         margin: 0 auto;
+    }
+
+    .message-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
     }
 
     .skill-bubble {
@@ -894,7 +900,8 @@
 
     .about-preview,
     .work-preview,
-    .contact-cta {
+    .contact-cta,
+    .message-section {
         padding: 3rem 1rem;
     }
 
@@ -918,11 +925,133 @@
     .cta-title {
         font-size: 1.25rem;
     }
+
+    .message-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .live-messages .danmaku-container,
+    .message-insights .analysis-content {
+        min-height: 200px;
+    }
+
+    .guestbook-btn {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
-/* ============================================
-   GUESTBOOK SECTION
-   ============================================ */
+/* ============================================   MESSAGE SECTION   ============================================ */
+.message-section {
+    display: block;
+    width: 100%;
+    padding: 8rem 2rem;
+    background: var(--darker-bg);
+    position: relative;
+    z-index: 1;
+}
+
+.message-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.message-form input,
+.message-form textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.8);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.message-form input:focus,
+.message-form textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(217, 119, 87, 0.1);
+}
+
+.message-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.message-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.live-messages,
+.message-insights {
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.live-messages:hover,
+.message-insights:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 20px rgba(217, 119, 87, 0.15);
+}
+
+.message-header {
+    padding: 1rem;
+    background: rgba(217, 119, 87, 0.1);
+    border-bottom: 1px solid var(--border-color);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.message-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.message-header h3 i {
+    color: var(--primary-color);
+}
+
+.live-messages .danmaku-container {
+    height: 250px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+}
+
+.message-insights .analysis-content {
+    min-height: 250px;
+    padding: 1rem;
+}
+
+/* ============================================   GUESTBOOK SECTION   ============================================ */
 .guestbook-section {
     margin-top: 2rem;
     padding-top: 2rem;
@@ -1054,6 +1183,8 @@
 }
 
 .danmaku-item {
+    position: absolute;
+    right: -100%;
     padding: 0.5rem 1rem;
     background: rgba(255, 255, 255, 0.9);
     border: 1px solid var(--border-color);
@@ -1064,18 +1195,11 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100%;
     opacity: 0;
-    transform: translateX(-100%);
-    transition: all 0.5s ease;
-}
-
-.danmaku-item.new {
-    animation: danmakuIn 0.5s ease forwards;
 }
 
 .danmaku-item.animate {
-    animation: danmakuFlow 8s linear forwards;
+    animation: danmakuFlow linear forwards;
 }
 
 .danmaku-name {
@@ -1084,29 +1208,22 @@
     margin-right: 0.5rem;
 }
 
-@keyframes danmakuIn {
-    from {
-        opacity: 0;
-        transform: translateX(-100%);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
 @keyframes danmakuFlow {
     0% {
+        opacity: 0;
+        right: -100%;
+    }
+    10% {
         opacity: 1;
-        transform: translateX(0);
+        right: -100%;
     }
     90% {
         opacity: 1;
-        transform: translateX(0);
+        right: 100%;
     }
     100% {
         opacity: 0;
-        transform: translateX(100%);
+        right: 100%;
     }
 }
 

@@ -469,23 +469,30 @@ function initGuestbook() {
 
         danmakuCount++;
         const danmaku = document.createElement('div');
-        danmaku.className = 'danmaku-item' + (animate ? ' new' : '');
+        danmaku.className = 'danmaku-item';
         danmaku.innerHTML = `<span class="danmaku-name">${escapeHtml(msg.name)}:</span> ${escapeHtml(msg.message)}`;
 
-        if (animate) {
-            danmakuContainer.appendChild(danmaku);
-            setTimeout(() => danmaku.classList.add('animate'), 10);
-            // Remove after animation
-            setTimeout(() => {
-                if (danmaku.parentNode) {
-                    danmaku.remove();
-                }
-            }, 8000);
-        } else {
-            // For initial load, add at the beginning
-            danmakuContainer.insertBefore(danmaku, danmakuContainer.firstChild);
-            danmaku.style.opacity = '1';
-        }
+        // Set random vertical position
+        const top = Math.random() * (danmakuContainer.offsetHeight - 40);
+        danmaku.style.top = `${top}px`;
+
+        // Set random speed (4-10 seconds to cross the screen)
+        const duration = 4 + Math.random() * 6;
+        danmaku.style.animationDuration = `${duration}s`;
+
+        danmakuContainer.appendChild(danmaku);
+
+        // Start animation
+        setTimeout(() => danmaku.classList.add('animate'), 10);
+
+        // Remove after animation and re-add to create loop
+        setTimeout(() => {
+            if (danmaku.parentNode) {
+                danmaku.remove();
+                // Re-add the danmaku to create loop
+                setTimeout(() => addDanmaku(msg, false), 1000);
+            }
+        }, duration * 1000);
     }
 
     // Display analysis results

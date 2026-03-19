@@ -160,7 +160,7 @@ ${messagesText}
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: '',
+                model: 'deepseek-chat',
                 messages: [{ role: 'user', content: prompt }],
                 temperature: 0.5,
                 max_tokens: 1500
@@ -215,67 +215,7 @@ app.post('/api/guestbook/analyze', async (req, res) => {
     }
 });
 
-// LLM分析留言
-app.post('/api/guestbook/analyze', async (req, res) => {
-    try {
-        const messages = JSON.parse(fs.readFileSync(MESSAGES_FILE, 'utf8'));
 
-        if (messages.length === 0) {
-            return res.json({ clusters: [], summary: '暂无留言' });
-        }
-
-        const apiKey = process.env.DEEPSEEK_API_KEY;
-        if (!apiKey) {
-            return res.status(500).json({ error: 'API key not configured' });
-        }
-
-        // 构建分析提示词
-        const messagesText = messages.map(m => `- ${m.name}: ${m.message}`).join('\n');
-
-        const prompt = `请分析以下留言，对它们进行聚类并总结。每条留言格式为 "姓名: 内容":
-
-${messagesText}
-
-请返回JSON格式的分析结果，包含:
-1. clusters: 聚类数组，每个聚类包含 category(类别名) 和 keywords(关键词数组)
-2. summary: 一句话总结
-
-只返回JSON，不要其他内容。`;
-
-        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-                model: '',
-                messages: [{ role: 'user', content: prompt }],
-                temperature: 0.5,
-                max_tokens: 1000
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const analysisText = data.choices[0].message.content;
-
-        // 尝试解析JSON
-        try {
-            const analysis = JSON.parse(analysisText);
-            res.json(analysis);
-        } catch {
-            // 如果解析失败，返回原始文本
-            res.json({ summary: analysisText, clusters: [] });
-        }
-    } catch (error) {
-        console.error('Error analyzing messages:', error);
-        res.status(500).json({ error: 'Failed to analyze messages' });
-    }
-});
 
 // Chat API endpoint
 app.post('/api/chat', async (req, res) => {
