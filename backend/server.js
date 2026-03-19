@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs/promises');
 require('dotenv').config();
 
 const app = express();
@@ -9,23 +10,21 @@ const port = process.env.PORT || 3000;
 // jsonbin配置
 const JSONBIN_API_KEY = process.env.JSONBIN_API_KEY;
 const JSONBIN_BIN_ID = process.env.JSONBIN_BIN_ID;
+const JSONBIN_ANALYSIS_BIN_ID = process.env.JSONBIN_ANALYSIS_BIN_ID;
 const JSONBIN_BASE_URL = 'https://api.jsonbin.io/v3';
 
 // 辅助函数：获取数据
 async function fetchJsonBin(binId) {
-  try {
-    const response = await fetch(`${JSONBIN_BASE_URL}/b/${binId}`, {
-      headers: {
-        'X-Master-Key': JSONBIN_API_KEY
-      }
-    });
-    if (!response.ok) throw new Error('Failed to fetch data');
-    const data = await response.json();
-    return data.record;
-  } catch (error) {
-    console.error('Error fetching from jsonbin:', error);
-    return [];
+  const response = await fetch(`${JSONBIN_BASE_URL}/b/${binId}`, {
+    headers: {
+      'X-Master-Key': JSONBIN_API_KEY
+    }
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch jsonbin ${binId}: ${response.status}`);
   }
+  const data = await response.json();
+  return data.record;
 }
 
 // 辅助函数：更新数据
@@ -45,6 +44,55 @@ async function updateJsonBin(binId, data) {
     console.error('Error updating jsonbin:', error);
     throw error;
   }
+}
+
+function canUseJsonBin(binId) {
+    return Boolean(JSONBIN_API_KEY && binId);
+}
+
+async function fetchMessages() {
+    if (!canUseJsonBin(JSONBIN_BIN_ID)) {
+        throw new Error('JSONBIN_API_KEY and JSONBIN_BIN_ID are required for guestbook messages');
+    }
+    const messages = await fetchJsonBin(JSONBIN_BIN_ID);
+    return Array.isArray(messages) ? messages : [];
+}
+
+async function saveMessages(messages) {
+    if (!canUseJsonBin(JSONBIN_BIN_ID)) {
+        throw new Error('JSONBIN_API_KEY and JSONBIN_BIN_ID are required for guestbook messages');
+    }
+    await updateJsonBin(JSONBIN_BIN_ID, messages);
+}
+
+function normalizeAnalysis(analysis) {
+    return {
+        clusters: Array.isArray(analysis?.clusters) ? analysis.clusters : [],
+        summary: typeof analysis?.summary === 'string' ? analysis.summary : '',
+        wordcloud: Array.isArray(analysis?.wordcloud) ? analysis.wordcloud : [],
+        lastUpdate: analysis?.lastUpdate || null
+    };
+}
+
+async function fetchAnalysis() {
+    if (!canUseJsonBin(JSONBIN_ANALYSIS_BIN_ID)) {
+        throw new Error('JSONBIN_API_KEY and JSONBIN_ANALYSIS_BIN_ID are required for guestbook analysis');
+    }
+    const analysis = await fetchJsonBin(JSONBIN_ANALYSIS_BIN_ID);
+    return normalizeAnalysis(analysis);
+}
+
+async function saveAnalysis(analysis) {
+    if (!canUseJsonBin(JSONBIN_ANALYSIS_BIN_ID)) {
+        throw new Error('JSONBIN_API_KEY and JSONBIN_ANALYSIS_BIN_ID are required for guestbook analysis');
+    }
+    const normalized = normalizeAnalysis(analysis);
+    await updateJsonBin(JSONBIN_ANALYSIS_BIN_ID, normalized);
+}
+
+async function readPrompt(promptFile) {
+    const promptPath = path.join(__dirname, 'prompts', promptFile);
+    return fs.readFile(promptPath, 'utf8');
 }
 
 // Request logging middleware
@@ -80,7 +128,7 @@ app.get('/health', (req, res) => {
 // 获取所有留言
 app.get('/api/guestbook', async (req, res) => {
     try {
-        const messages = await fetchJsonBin(JSONBIN_BIN_ID);
+        const messages = await fetchMessages();
         // 返回最近50条留言，按时间倒序
         res.json(messages.slice(0, 50).reverse());
     } catch (error) {
@@ -102,7 +150,7 @@ app.post('/api/guestbook', async (req, res) => {
     }
 
     try {
-        const messages = await fetchJsonBin(JSONBIN_BIN_ID);
+        const messages = await fetchMessages();
 
         const newMessage = {
             id: Date.now().toString(),
@@ -118,12 +166,14 @@ app.post('/api/guestbook', async (req, res) => {
             messages.splice(0, messages.length - 200);
         }
 
-        await updateJsonBin(JSONBIN_BIN_ID, messages);
+        await saveMessages(messages);
 
         console.log('New guestbook message:', newMessage);
 
         // 自动触发分析（异步，不阻塞响应）
-        analyzeMessagesAsync();
+        analyzeMessagesAsync().catch((err) => {
+            console.error('Background analysis failed:', err);
+        });
 
         res.json(newMessage);
     } catch (error) {
@@ -135,16 +185,30 @@ app.post('/api/guestbook', async (req, res) => {
 // 异步分析留言
 async function analyzeMessagesAsync() {
     try {
-        const messages = await fetchJsonBin(JSONBIN_BIN_ID);
+        const messages = await fetchMessages();
 
         if (messages.length === 0) {
-            return;
+            const emptyAnalysis = {
+                clusters: [],
+                summary: 'No messages to analyze yet.',
+                wordcloud: [],
+                lastUpdate: new Date().toISOString()
+            };
+            await saveAnalysis(emptyAnalysis);
+            return emptyAnalysis;
         }
 
         const apiKey = process.env.DEEPSEEK_API_KEY;
         if (!apiKey) {
             console.log('No API key, skipping analysis');
-            return;
+            const previous = await fetchAnalysis();
+            const fallback = {
+                ...previous,
+                summary: previous.summary || 'Analysis unavailable: missing DEEPSEEK_API_KEY.',
+                lastUpdate: new Date().toISOString()
+            };
+            await saveAnalysis(fallback);
+            return fallback;
         }
 
         // 构建分析提示词
@@ -153,10 +217,7 @@ async function analyzeMessagesAsync() {
         // 读取分析提示词文件
         let prompt = '';
         try {
-            const promptPath = path.join(__dirname, 'prompts', 'analysis.md');
-            // 使用fs.readFileSync读取文件
-            const fs = require('fs');
-            prompt = fs.readFileSync(promptPath, 'utf8');
+            prompt = await readPrompt('analysis.md');
             // 替换占位符
             prompt = prompt.replace('{{messagesText}}', messagesText);
             console.log('Successfully read analysis prompt file');
@@ -194,9 +255,10 @@ async function analyzeMessagesAsync() {
         let analysis = { clusters: [], summary: '', wordcloud: [] };
         try {
             // 移除JSON代码块标记
-            let cleanText = analysisText;
-            if (cleanText.startsWith('```json')) {
-                cleanText = cleanText.replace('```json', '').replace('```', '').trim();
+            let cleanText = analysisText.trim();
+            const fencedMatch = cleanText.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+            if (fencedMatch?.[1]) {
+                cleanText = fencedMatch[1].trim();
             }
             analysis = JSON.parse(cleanText);
             // 确保wordcloud字段存在
@@ -221,21 +283,19 @@ async function analyzeMessagesAsync() {
         }
 
         analysis.lastUpdate = new Date().toISOString();
+        await saveAnalysis(analysis);
         console.log('Analysis updated:', analysis);
+        return normalizeAnalysis(analysis);
     } catch (error) {
         console.error('Error analyzing messages:', error);
+        throw error;
     }
 }
 
 // 获取分析结果
-app.get('/api/guestbook/analyze', (req, res) => {
+app.get('/api/guestbook/analyze', async (req, res) => {
     try {
-        // 返回默认分析结果
-        const analysis = { 
-            clusters: [], 
-            summary: 'Analysis disabled in cloud mode',
-            lastUpdate: new Date().toISOString() 
-        };
+        const analysis = await fetchAnalysis();
         res.json(analysis);
     } catch (error) {
         console.error('Error reading analysis:', error);
@@ -247,12 +307,7 @@ app.get('/api/guestbook/analyze', (req, res) => {
 app.post('/api/guestbook/analyze', async (req, res) => {
     try {
         await analyzeMessagesAsync();
-        // 返回默认分析结果
-        const analysis = { 
-            clusters: [], 
-            summary: 'Analysis triggered in cloud mode',
-            lastUpdate: new Date().toISOString() 
-        };
+        const analysis = await fetchAnalysis();
         res.json(analysis);
     } catch (error) {
         console.error('Error triggering analysis:', error);
@@ -283,10 +338,7 @@ app.post('/api/chat', async (req, res) => {
         let systemPrompt = '';
         const mode = req.body.mode || 'resume';
         try {
-            const promptPath = path.join(__dirname, 'prompts', `${mode}.md`);
-            // 使用fs.readFileSync读取文件
-            const fs = require('fs');
-            systemPrompt = fs.readFileSync(promptPath, 'utf8');
+            systemPrompt = await readPrompt(`${mode}.md`);
             console.log(`Successfully read prompt file for mode: ${mode}`);
         } catch (err) {
             console.error('Error reading prompt file:', err);
@@ -313,7 +365,7 @@ app.post('/api/chat', async (req, res) => {
             messages: apiMessages,
             temperature: 0.2,
             max_tokens: 2000,
-            stream: true
+            stream: false
         };
 
         const response = await fetch(apiUrl, {
